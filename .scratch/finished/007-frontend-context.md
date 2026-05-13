@@ -8,14 +8,14 @@ Implement TodoContext actions (async functions) that fetch from the backend API 
 
 ## Acceptance criteria
 
-- [ ] `listTodos()` fetches GET /todos and updates state
-- [ ] `addTodo(title)` POSTs to /todos, updates state
-- [ ] `updateTodo(id, updates)` PUTs to /todos/{id}, updates state
-- [ ] `deleteTodo(id)` DELETEs /todos/{id}, updates state
-- [ ] `bulkDeleteTodos(ids)` DELETEs /todos with body, updates state
-- [ ] Loading state managed (set before request, clear after)
-- [ ] Error state managed (set on failure, clear on success)
-- [ ] Context unit tests pass (state updates, error handling, mocked API calls)
+- [x] `listTodos()` fetches GET /todos and updates state
+- [x] `addTodo(title)` POSTs to /todos, updates state
+- [x] `updateTodo(id, updates)` PUTs to /todos/{id}, updates state
+- [x] `deleteTodo(id)` DELETEs /todos/{id}, updates state
+- [x] `bulkDeleteTodos(ids)` DELETEs /todos with body, updates state
+- [x] Loading state managed (set before request, clear after)
+- [x] Error state managed (set on failure, clear on success)
+- [x] Context unit tests pass (state updates, error handling, mocked API calls)
 
 ## Blocked by
 

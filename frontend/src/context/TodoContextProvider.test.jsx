@@ -1,7 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { useContext } from 'react';
-import { TodoContext, TodoContextProvider } from './TodoContext';
+import { TodoContextProvider } from './TodoContext';
+import { TodoContext } from './TodoContextValue';
 
 const TestConsumer = () => {
   const ctx = useContext(TodoContext);
