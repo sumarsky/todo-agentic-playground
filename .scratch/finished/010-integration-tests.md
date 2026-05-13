@@ -13,11 +13,11 @@ Write integration tests across frontend and backend to verify full user flows wo
 
 ## Acceptance criteria
 
-- [ ] Backend integration tests pass (use cases orchestrated correctly, repository state correct)
-- [ ] Frontend integration tests pass (components interact, context updates correctly)
-- [ ] System integration tests pass (full flow with real API calls)
-- [ ] Error scenarios tested (validation errors, 404s, etc.)
-- [ ] All frontend-backend handshake verified (request/response shape matches)
+- [x] Backend integration tests pass (use cases orchestrated correctly, repository state correct)
+- [x] Frontend integration tests pass (components interact, context updates correctly)
+- [x] System integration tests pass (full flow with real API calls)
+- [x] Error scenarios tested (validation errors, 404s, etc.)
+- [x] All frontend-backend handshake verified (request/response shape matches)
 
 ## Blocked by
 

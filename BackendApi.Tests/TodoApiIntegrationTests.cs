@@ -31,6 +31,40 @@ public class TodoApiIntegrationTests : IAsyncLifetime
     }
 
     [Fact]
+    public async Task TodoLifecycle_CreateListUpdateToggleDelete_PersistsExpectedState()
+    {
+        var createResponse = await _client.PostAsync("/todos", ToJsonContent(new { Title = "Draft tests" }));
+        Assert.Equal(HttpStatusCode.Created, createResponse.StatusCode);
+        var created = JsonDocument.Parse(await createResponse.Content.ReadAsStringAsync()).RootElement;
+        var id = created.GetProperty("id").GetString();
+
+        var listResponse = await _client.GetAsync("/todos");
+        Assert.Equal(HttpStatusCode.OK, listResponse.StatusCode);
+        var listed = JsonDocument.Parse(await listResponse.Content.ReadAsStringAsync()).RootElement;
+        Assert.Contains(listed.EnumerateArray(), todo =>
+            todo.GetProperty("id").GetString() == id &&
+            todo.GetProperty("title").GetString() == "Draft tests" &&
+            todo.GetProperty("completed").GetBoolean() == false);
+
+        var updateResponse = await _client.PutAsync($"/todos/{id}/title", ToJsonContent(new { Title = "Ship integration tests" }));
+        Assert.Equal(HttpStatusCode.OK, updateResponse.StatusCode);
+        var updated = JsonDocument.Parse(await updateResponse.Content.ReadAsStringAsync()).RootElement;
+        Assert.Equal("Ship integration tests", updated.GetProperty("title").GetString());
+
+        var toggleResponse = await _client.PutAsync($"/todos/{id}/toggle", null);
+        Assert.Equal(HttpStatusCode.OK, toggleResponse.StatusCode);
+        var toggled = JsonDocument.Parse(await toggleResponse.Content.ReadAsStringAsync()).RootElement;
+        Assert.True(toggled.GetProperty("completed").GetBoolean());
+
+        var deleteResponse = await _client.DeleteAsync($"/todos/{id}");
+        Assert.Equal(HttpStatusCode.NoContent, deleteResponse.StatusCode);
+
+        var finalListResponse = await _client.GetAsync("/todos");
+        var finalList = JsonDocument.Parse(await finalListResponse.Content.ReadAsStringAsync()).RootElement;
+        Assert.DoesNotContain(finalList.EnumerateArray(), todo => todo.GetProperty("id").GetString() == id);
+    }
+
+    [Fact]
     public async Task CreateTodo_WithValidTitle_Returns201Created()
     {
         // Arrange

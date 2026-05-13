@@ -226,13 +226,17 @@ describe('TodoContextProvider - Actions', () => {
   });
 
   describe('updateTodo(id, updates)', () => {
-    it('puts to /todos/{id} with updates, merges todo in state, returns updated todos', async () => {
+    it('puts title and completion changes to backend todo endpoints, merges todo in state, returns updated todos', async () => {
       const todoToUpdate = { id: '1', title: 'Old Title', completed: false };
       const updated = { id: '1', title: 'New Title', completed: true };
 
-      globalThis.fetch.mockResolvedValueOnce({
-        json: async () => updated,
-      });
+      globalThis.fetch
+        .mockResolvedValueOnce({
+          json: async () => ({ id: '1', title: 'New Title', completed: false }),
+        })
+        .mockResolvedValueOnce({
+          json: async () => updated,
+        });
 
       let capturedActions;
       const StateCapture = () => {
@@ -261,10 +265,13 @@ describe('TodoContextProvider - Actions', () => {
         expect(screen.getByTestId('todo-title')).toHaveTextContent('New Title');
       });
 
-      expect(globalThis.fetch).toHaveBeenCalledWith('http://localhost:5000/todos/1', {
+      expect(globalThis.fetch).toHaveBeenNthCalledWith(1, 'http://localhost:5000/todos/1/title', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title: 'New Title', completed: true }),
+        body: JSON.stringify({ title: 'New Title' }),
+      });
+      expect(globalThis.fetch).toHaveBeenNthCalledWith(2, 'http://localhost:5000/todos/1/toggle', {
+        method: 'PUT',
       });
       expect(result).toEqual([updated]);
       expect(screen.getByTestId('error')).toHaveTextContent('none');
@@ -354,10 +361,8 @@ describe('TodoContextProvider - Actions', () => {
         expect(screen.getByTestId('todos-count')).toHaveTextContent('1');
       });
 
-      expect(globalThis.fetch).toHaveBeenCalledWith('http://localhost:5000/todos', {
+      expect(globalThis.fetch).toHaveBeenCalledWith('http://localhost:5000/todos?ids=1%2C3', {
         method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ids: ['1', '3'] }),
       });
       expect(result).toEqual([{ id: '2', title: 'Task 2' }]);
       expect(screen.getByTestId('error')).toHaveTextContent('none');
