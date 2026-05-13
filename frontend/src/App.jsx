@@ -1,12 +1,16 @@
 import { TodoContextProvider } from './context/TodoContext'
+import { TodoForm } from './components/TodoForm'
+import { TodoList } from './components/TodoList'
 import './App.css'
 
 function App() {
   return (
     <TodoContextProvider>
-      <div className="p-8">
+      <main className="todo-app">
         <h1>Todos App</h1>
-      </div>
+        <TodoForm />
+        <TodoList />
+      </main>
     </TodoContextProvider>
   )
 }

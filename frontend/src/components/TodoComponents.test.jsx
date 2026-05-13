@@ -1,0 +1,140 @@
+import { describe, it, expect, vi } from 'vitest';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { TodoContext } from '../context/TodoContextValue';
+import { TodoForm } from './TodoForm';
+import { TodoItem } from './TodoItem';
+import { TodoList } from './TodoList';
+
+const renderWithTodos = (ui, contextOverrides = {}) => {
+  const value = {
+    todos: [],
+    loading: false,
+    error: null,
+    listTodos: vi.fn(),
+    addTodo: vi.fn(),
+    updateTodo: vi.fn(),
+    deleteTodo: vi.fn(),
+    bulkDeleteTodos: vi.fn(),
+    ...contextOverrides,
+  };
+
+  return {
+    ...render(
+      <TodoContext.Provider value={value}>
+        {ui}
+      </TodoContext.Provider>
+    ),
+    value,
+  };
+};
+
+describe('TodoForm', () => {
+  it('adds a todo with the entered title and clears the input', async () => {
+    const addTodo = vi.fn().mockResolvedValue([]);
+
+    renderWithTodos(<TodoForm />, { addTodo });
+
+    const input = screen.getByLabelText(/todo title/i);
+    fireEvent.change(input, { target: { value: 'Write component tests' } });
+    fireEvent.click(screen.getByRole('button', { name: /add todo/i }));
+
+    expect(addTodo).toHaveBeenCalledWith('Write component tests');
+    await waitFor(() => {
+      expect(input).toHaveValue('');
+    });
+  });
+
+  it('does not add a todo when the title is blank', () => {
+    const addTodo = vi.fn();
+
+    renderWithTodos(<TodoForm />, { addTodo });
+
+    const input = screen.getByLabelText(/todo title/i);
+    fireEvent.change(input, { target: { value: '   ' } });
+    fireEvent.click(screen.getByRole('button', { name: /add todo/i }));
+
+    expect(addTodo).not.toHaveBeenCalled();
+    expect(input).toHaveValue('   ');
+  });
+});
+
+describe('TodoList', () => {
+  it('renders todos from context', () => {
+    renderWithTodos(<TodoList />, {
+      todos: [
+        { id: '1', title: 'Write tests', completed: false },
+        { id: '2', title: 'Ship UI', completed: true },
+      ],
+    });
+
+    expect(screen.getByText('Write tests')).toBeInTheDocument();
+    expect(screen.getByText('Ship UI')).toBeInTheDocument();
+  });
+
+  it('shows an empty state when there are no todos', () => {
+    renderWithTodos(<TodoList />);
+
+    expect(screen.getByText(/no todos yet/i)).toBeInTheDocument();
+  });
+});
+
+describe('TodoItem', () => {
+  it('renders title, completion checkbox, and delete button', () => {
+    renderWithTodos(
+      <TodoItem todo={{ id: '1', title: 'Review PR', completed: false }} />
+    );
+
+    expect(screen.getByText('Review PR')).toBeInTheDocument();
+    expect(screen.getByRole('checkbox', { name: /mark review pr complete/i })).not.toBeChecked();
+    expect(screen.getByRole('button', { name: /delete review pr/i })).toBeInTheDocument();
+  });
+
+  it('updates the todo when completion checkbox is clicked', () => {
+    const updateTodo = vi.fn();
+
+    renderWithTodos(
+      <TodoItem todo={{ id: '1', title: 'Review PR', completed: false }} />,
+      { updateTodo }
+    );
+
+    fireEvent.click(screen.getByRole('checkbox', { name: /mark review pr complete/i }));
+
+    expect(updateTodo).toHaveBeenCalledWith('1', {
+      title: 'Review PR',
+      completed: true,
+    });
+  });
+
+  it('deletes the todo when delete button is clicked', () => {
+    const deleteTodo = vi.fn();
+
+    renderWithTodos(
+      <TodoItem todo={{ id: '1', title: 'Review PR', completed: false }} />,
+      { deleteTodo }
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: /delete review pr/i }));
+
+    expect(deleteTodo).toHaveBeenCalledWith('1');
+  });
+
+  it('updates the todo title from edit mode', () => {
+    const updateTodo = vi.fn();
+
+    renderWithTodos(
+      <TodoItem todo={{ id: '1', title: 'Review PR', completed: false }} />,
+      { updateTodo }
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: /edit review pr/i }));
+    fireEvent.change(screen.getByLabelText(/edit todo title/i), {
+      target: { value: 'Review issue' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: /save todo/i }));
+
+    expect(updateTodo).toHaveBeenCalledWith('1', {
+      title: 'Review issue',
+      completed: false,
+    });
+  });
+});
