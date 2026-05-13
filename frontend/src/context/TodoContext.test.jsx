@@ -114,6 +114,33 @@ describe('TodoContextProvider - Actions', () => {
       expect(screen.getByTestId('loading')).toHaveTextContent('false');
       expect(screen.getByTestId('error')).toHaveTextContent('none');
     });
+
+    it('fetches todos with completed and search query params', async () => {
+      const mockTodos = [{ id: '1', title: 'Docs', completed: true }];
+
+      globalThis.fetch.mockResolvedValueOnce({
+        json: async () => mockTodos,
+      });
+
+      let capturedActions;
+      const StateCapture = () => {
+        const ctx = useContext(TodoContext);
+        capturedActions = ctx;
+        return <span data-testid="todos-count">{ctx.todos.length}</span>;
+      };
+
+      render(
+        <TodoContextProvider>
+          <StateCapture />
+        </TodoContextProvider>
+      );
+
+      await capturedActions.listTodos({ completed: true, search: 'docs' });
+
+      expect(globalThis.fetch).toHaveBeenCalledWith(
+        'http://localhost:5000/todos?completed=true&search=docs'
+      );
+    });
   });
 
   describe('addTodo(title)', () => {

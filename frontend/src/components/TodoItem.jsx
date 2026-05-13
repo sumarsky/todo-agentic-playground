@@ -1,7 +1,7 @@
 import { useContext, useState } from 'react';
 import { TodoContext } from '../context/TodoContextValue';
 
-export const TodoItem = ({ todo }) => {
+export const TodoItem = ({ todo, selected = false, onSelectionChange }) => {
   const { updateTodo, deleteTodo } = useContext(TodoContext);
   const [isEditing, setIsEditing] = useState(false);
   const [editedTitle, setEditedTitle] = useState(todo.title);
@@ -46,6 +46,14 @@ export const TodoItem = ({ todo }) => {
 
   return (
     <div>
+      {onSelectionChange ? (
+        <input
+          type="checkbox"
+          checked={selected}
+          aria-label={`Select ${todo.title}`}
+          onChange={(event) => onSelectionChange(todo.id, event.target.checked)}
+        />
+      ) : null}
       <label>
         <input
           type="checkbox"

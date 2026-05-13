@@ -7,6 +7,7 @@ export const TodoContextProvider = ({ children, initialTodos = [] }) => {
   const [todos, setTodos] = useState(initialTodos);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [filters, setFilters] = useState({ completed: false, search: '' });
 
   const runTodoRequest = async (request, nextTodos) => {
     setLoading(true);
@@ -24,11 +25,28 @@ export const TodoContextProvider = ({ children, initialTodos = [] }) => {
     }
   };
 
-  const listTodos = async () =>
+  const listTodos = async (nextFilters = filters) =>
     runTodoRequest(async () => {
-      const res = await fetch(`${API_BASE_URL}/todos`);
+      const params = new URLSearchParams();
+      if (nextFilters.completed) {
+        params.set('completed', 'true');
+      }
+      if (nextFilters.search) {
+        params.set('search', nextFilters.search);
+      }
+      const query = params.toString();
+      const url = `${API_BASE_URL}/todos${query ? `?${query}` : ''}`;
+      const res = await fetch(url);
       return res.json();
     }, (data) => data);
+
+  const setCompletedFilter = (completed) => {
+    setFilters((current) => ({ ...current, completed }));
+  };
+
+  const setSearchFilter = (search) => {
+    setFilters((current) => ({ ...current, search }));
+  };
 
   const addTodo = async (title) =>
     runTodoRequest(async () => {
@@ -70,7 +88,10 @@ export const TodoContextProvider = ({ children, initialTodos = [] }) => {
     todos,
     loading,
     error,
+    filters,
     listTodos,
+    setCompletedFilter,
+    setSearchFilter,
     addTodo,
     updateTodo,
     deleteTodo,

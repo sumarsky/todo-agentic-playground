@@ -1,6 +1,8 @@
 import { describe, it, expect, vi } from 'vitest';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { TodoContext } from '../context/TodoContextValue';
+import { BulkDeleteButton } from './BulkDeleteButton';
+import { FilterBar } from './FilterBar';
 import { TodoForm } from './TodoForm';
 import { TodoItem } from './TodoItem';
 import { TodoList } from './TodoList';
@@ -15,6 +17,9 @@ const renderWithTodos = (ui, contextOverrides = {}) => {
     updateTodo: vi.fn(),
     deleteTodo: vi.fn(),
     bulkDeleteTodos: vi.fn(),
+    filters: { completed: false, search: '' },
+    setCompletedFilter: vi.fn(),
+    setSearchFilter: vi.fn(),
     ...contextOverrides,
   };
 
@@ -27,6 +32,56 @@ const renderWithTodos = (ui, contextOverrides = {}) => {
     value,
   };
 };
+
+describe('FilterBar', () => {
+  it('updates completed filter and refetches todos', () => {
+    const setCompletedFilter = vi.fn();
+    const listTodos = vi.fn();
+
+    renderWithTodos(<FilterBar />, {
+      filters: { completed: false, search: '' },
+      setCompletedFilter,
+      listTodos,
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: /show completed todos/i }));
+
+    expect(setCompletedFilter).toHaveBeenCalledWith(true);
+    expect(listTodos).toHaveBeenCalledWith({ completed: true, search: '' });
+  });
+
+  it('updates search filter and refetches todos', () => {
+    const setSearchFilter = vi.fn();
+    const listTodos = vi.fn();
+
+    renderWithTodos(<FilterBar />, {
+      filters: { completed: true, search: '' },
+      setSearchFilter,
+      listTodos,
+    });
+
+    fireEvent.change(screen.getByLabelText(/search todos/i), {
+      target: { value: 'docs' },
+    });
+
+    expect(setSearchFilter).toHaveBeenCalledWith('docs');
+    expect(listTodos).toHaveBeenCalledWith({ completed: true, search: 'docs' });
+  });
+});
+
+describe('BulkDeleteButton', () => {
+  it('shows selected count and bulk deletes selected todo IDs', () => {
+    const bulkDeleteTodos = vi.fn();
+
+    renderWithTodos(<BulkDeleteButton selectedIds={['1', '3']} />, {
+      bulkDeleteTodos,
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: /delete selected \(2\)/i }));
+
+    expect(bulkDeleteTodos).toHaveBeenCalledWith(['1', '3']);
+  });
+});
 
 describe('TodoForm', () => {
   it('adds a todo with the entered title and clears the input', async () => {
@@ -75,6 +130,23 @@ describe('TodoList', () => {
     renderWithTodos(<TodoList />);
 
     expect(screen.getByText(/no todos yet/i)).toBeInTheDocument();
+  });
+
+  it('selects todos and bulk deletes selected ids', () => {
+    const bulkDeleteTodos = vi.fn();
+
+    renderWithTodos(<TodoList />, {
+      todos: [
+        { id: '1', title: 'Write tests', completed: false },
+        { id: '2', title: 'Ship UI', completed: true },
+      ],
+      bulkDeleteTodos,
+    });
+
+    fireEvent.click(screen.getByRole('checkbox', { name: /select write tests/i }));
+    fireEvent.click(screen.getByRole('button', { name: /delete selected \(1\)/i }));
+
+    expect(bulkDeleteTodos).toHaveBeenCalledWith(['1']);
   });
 });
 
