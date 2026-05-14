@@ -15,11 +15,11 @@ This document serves as the single source of truth for frontend/backend handshak
 
 ## Acceptance criteria
 
-- [ ] API contract documented (all endpoints, request/response schema)
-- [ ] Domain model documented (Todo entity, repository port)
-- [ ] Testing strategy documented (test types, module coverage)
-- [ ] Architecture diagram included (domain → application → infrastructure)
-- [ ] Design review completed (no breaking changes after this point)
+- [x] API contract documented (all endpoints, request/response schema)
+- [x] Domain model documented (Todo entity, repository port)
+- [x] Testing strategy documented (test types, module coverage)
+- [x] Architecture diagram included (domain → application → infrastructure)
+- [x] Design review completed (no breaking changes after this point)
 
 ## Blocked by
 
