@@ -97,11 +97,25 @@ Unhandled exceptions return:
 ## Key Decisions
 
 - API and frontend behavior should stay aligned with `docs/api-contract.md`.
+- "Solution split" means splitting backend .NET layers into separate projects while leaving the React frontend unchanged.
+- Backend split projects keep the `BackendApi.*` naming prefix for now.
+- Namespaces should match project boundaries; API HTTP request/response types live under `BackendApi.Contracts`.
 - Repository is intentionally in-memory for current scope.
 - Persistence can change behind `ITodoRepository`.
+- Repository ports belong in the application layer under `Ports`; domain model stays persistence-free.
 - Domain rules belong in the domain model.
 - Application orchestration belongs in application use cases/services.
+- Use cases stay as concrete classes; do not add one-method interfaces unless a real second implementation appears.
+- Do not add clock or ID generator ports during the split; introduce them only when deterministic time or ID generation becomes a real need.
+- API endpoints call application use cases directly; avoid a facade that only forwards to use cases.
+- HTTP request/response DTOs and HTTP mappers belong in the API layer, not application.
 - API layer should map HTTP requests/responses and keep business rules out.
+- API contract docs should focus on REST behavior and dependency rules; ADRs own project-split details.
+- Dependency injection registration should live in layer extension methods and be called by the API composition root.
+- Application and infrastructure DI extensions are named `AddApplication()` and `AddInfrastructure()`.
+- Infrastructure exposes `AddInfrastructure` for app wiring while keeping concrete adapters public for direct infrastructure tests.
+- Backend tests stay in one project with folders per layer until test dependencies or runtime needs justify splitting.
+- Backend test project may reference all backend layer projects so layer-specific tests stay narrow and direct.
 
 ## Commands
 
