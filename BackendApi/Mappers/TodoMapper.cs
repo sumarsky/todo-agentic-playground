@@ -1,7 +1,7 @@
-using BackendApi.Application.DTOs;
+using BackendApi.Contracts;
 using BackendApi.Domain;
 
-namespace BackendApi.Application.Mappers;
+namespace BackendApi.Mappers;
 
 public static class TodoMapper
 {

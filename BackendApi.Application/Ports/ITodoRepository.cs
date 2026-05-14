@@ -1,4 +1,6 @@
-namespace BackendApi.Domain;
+using BackendApi.Domain;
+
+namespace BackendApi.Application.Ports;
 
 public interface ITodoRepository
 {

@@ -1,4 +1,4 @@
-using BackendApi.Domain;
+using BackendApi.Application.Ports;
 
 namespace BackendApi.Application.UseCases;
 

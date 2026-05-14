@@ -1,15 +1,14 @@
 using Microsoft.AspNetCore.Diagnostics;
 using BackendApi.Application;
-using BackendApi.Domain;
 using BackendApi.Infrastructure;
-using BackendApi.Application.DTOs;
-using BackendApi.Application.Mappers;
+using BackendApi.Application.UseCases;
+using BackendApi.Contracts;
+using BackendApi.Mappers;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Configure Services
-builder.Services.AddSingleton<ITodoRepository, InMemoryTodoRepository>();
-builder.Services.AddSingleton<TodoApplicationService>();
+builder.Services.AddApplication();
+builder.Services.AddInfrastructure();
 
 // Configure CORS
 builder.Services.AddCors(options =>
@@ -63,11 +62,11 @@ app.MapGet("/error/unhandled", () =>
 });
 
 // Todo Endpoints
-app.MapPost("/todos", (TodoCreateRequest request, TodoApplicationService service) =>
+app.MapPost("/todos", (TodoCreateRequest request, CreateTodoUseCase useCase) =>
 {
     try
     {
-        var todo = service.CreateTodo(request.Title);
+        var todo = useCase.Execute(request.Title);
         return Results.Created($"/todos/{todo.Id}", TodoMapper.ToResponse(todo));
     }
     catch (ArgumentException ex)
@@ -76,17 +75,17 @@ app.MapPost("/todos", (TodoCreateRequest request, TodoApplicationService service
     }
 }).WithName("CreateTodo");
 
-app.MapGet("/todos", (TodoApplicationService service, bool? completed, string? search) =>
+app.MapGet("/todos", (ListTodosUseCase useCase, bool? completed, string? search) =>
 {
-    var todos = service.ListTodos(completed, search);
+    var todos = useCase.Execute(completed, search);
     return Results.Ok(TodoMapper.ToResponses(todos));
 }).WithName("ListTodos");
 
-app.MapPut("/todos/{id}/title", (Guid id, TodoUpdateTitleRequest request, TodoApplicationService service) =>
+app.MapPut("/todos/{id}/title", (Guid id, TodoUpdateTitleRequest request, UpdateTitleUseCase useCase) =>
 {
     try
     {
-        var todo = service.UpdateTodoTitle(id, request.Title);
+        var todo = useCase.Execute(id, request.Title);
         if (todo == null)
             return Results.NotFound(new ErrorResponse(404, "Todo not found"));
         return Results.Ok(TodoMapper.ToResponse(todo));
@@ -97,21 +96,21 @@ app.MapPut("/todos/{id}/title", (Guid id, TodoUpdateTitleRequest request, TodoAp
     }
 }).WithName("UpdateTodoTitle");
 
-app.MapPut("/todos/{id}/toggle", (Guid id, TodoApplicationService service) =>
+app.MapPut("/todos/{id}/toggle", (Guid id, ToggleCompletedUseCase useCase) =>
 {
-    var todo = service.ToggleTodoCompleted(id);
+    var todo = useCase.Execute(id);
     if (todo == null)
         return Results.NotFound(new ErrorResponse(404, "Todo not found"));
     return Results.Ok(TodoMapper.ToResponse(todo));
 }).WithName("ToggleTodoCompleted");
 
-app.MapDelete("/todos/{id}", (Guid id, TodoApplicationService service) =>
+app.MapDelete("/todos/{id}", (Guid id, DeleteTodoUseCase useCase) =>
 {
-    service.DeleteTodo(id);
+    useCase.Execute(id);
     return Results.NoContent();
 }).WithName("DeleteTodo");
 
-app.MapDelete("/todos", (HttpContext context, TodoApplicationService service) =>
+app.MapDelete("/todos", (HttpContext context, BulkDeleteTodoUseCase useCase) =>
 {
     var ids = context.Request.Query["ids"]
         .SelectMany(x => (x ?? string.Empty).Split(','))
@@ -122,7 +121,7 @@ app.MapDelete("/todos", (HttpContext context, TodoApplicationService service) =>
     if (ids.Count == 0)
         return Results.BadRequest(new ErrorResponse(400, "No valid IDs provided"));
 
-    service.DeleteMultipleTodos(ids);
+    useCase.Execute(ids);
     return Results.NoContent();
 }).WithName("BulkDeleteTodos");
 
