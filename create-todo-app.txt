@@ -1,1 +1,0 @@
-I want you to create a todo list app using react on the frontend and REST WEB API with dotnet 10 on the backend. The todo list is stored in memory and it has no authentication
