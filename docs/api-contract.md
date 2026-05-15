@@ -175,7 +175,6 @@ Current coverage gates:
 | --- | --- | --- |
 | Domain | `BackendApi.Tests/Domain/TodoTests.cs` | Todo construction, title invariant, toggle, title update, immutable identity/time behavior. |
 | Application use cases | `BackendApi.Tests/Application/UseCases/*Tests.cs` | Create, list filters, update title, toggle, delete, bulk delete. |
-| Application facade | `BackendApi.Tests/Application/TodoApplicationServiceTests.cs` | Service methods coordinate use cases through public service API. |
 | Infrastructure | `BackendApi.Tests/Infrastructure/InMemoryTodoRepositoryTests.cs` | Add, get, list, update, delete, bulk delete persistence behavior. |
 | Backend API integration | `BackendApi.Tests/TodoApiIntegrationTests.cs` | HTTP lifecycle, endpoint status codes, JSON response state. |
 | General API integration | `BackendApi.Tests/ApiIntegrationTests.cs` | Health, fallback 404, unhandled exception format. |

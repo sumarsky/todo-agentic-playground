@@ -22,7 +22,7 @@ Core capabilities:
 The backend follows a layered shape:
 
 - `BackendApi/Domain`: core `Todo` model and invariants.
-- `BackendApi/Application`: use cases, application service, DTOs, mapper, repository port.
+- `BackendApi/Application`: use cases, DTOs, repository port.
 - `BackendApi/Infrastructure`: in-memory repository implementation.
 - `BackendApi/Program.cs`: HTTP endpoints, CORS, error handling, dependency wiring.
 - `BackendApi.Tests`: backend domain, application, infrastructure, API integration, and docs-contract tests.
