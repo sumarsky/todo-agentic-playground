@@ -1,4 +1,4 @@
-Status: ready-for-agent
+Status: done
 
 # Move infrastructure adapter behind AddInfrastructure
 

@@ -1,4 +1,4 @@
-Status: ready-for-agent
+Status: done
 
 # Move HTTP contracts and mapping to API host
 

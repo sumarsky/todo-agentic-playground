@@ -6,7 +6,6 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddApplication(this IServiceCollection services)
     {
-        services.AddSingleton<TodoApplicationService>();
         services.AddTransient<UseCases.CreateTodoUseCase>();
         services.AddTransient<UseCases.ListTodosUseCase>();
         services.AddTransient<UseCases.UpdateTitleUseCase>();

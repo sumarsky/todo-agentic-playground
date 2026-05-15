@@ -1,4 +1,5 @@
 using BackendApi.Application;
+using BackendApi.Application.UseCases;
 using BackendApi.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -7,7 +8,7 @@ namespace BackendApi.Tests.Composition;
 public class LayerRegistrationTests
 {
     [Fact]
-    public void AddApplicationAndAddInfrastructure_ResolveTodoApplicationService()
+    public void AddApplicationAndAddInfrastructure_ResolveUseCases()
     {
         var services = new ServiceCollection();
 
@@ -16,8 +17,10 @@ public class LayerRegistrationTests
 
         using var provider = services.BuildServiceProvider();
 
-        var service = provider.GetRequiredService<TodoApplicationService>();
+        var createUseCase = provider.GetRequiredService<CreateTodoUseCase>();
+        var listUseCase = provider.GetRequiredService<ListTodosUseCase>();
 
-        Assert.NotNull(service);
+        Assert.NotNull(createUseCase);
+        Assert.NotNull(listUseCase);
     }
 }
