@@ -1,11 +1,11 @@
 namespace BackendApi.Domain;
 
-public class Todo
+public record Todo
 {
-    public Guid Id { get; }
-    public string Title { get; private set; }
-    public bool Completed { get; private set; }
-    public DateTime CreatedAt { get; }
+    public Guid Id { get; private init; }
+    public string Title { get; init; }
+    public bool Completed { get; init; }
+    public DateTime CreatedAt { get; private init; }
 
     public Todo(Guid id, string title)
     {
@@ -18,16 +18,13 @@ public class Todo
         CreatedAt = DateTime.UtcNow;
     }
 
-    public void ToggleCompleted()
-    {
-        Completed = !Completed;
-    }
+    public Todo ToggleCompleted() => this with { Completed = !Completed };
 
-    public void UpdateTitle(string newTitle)
+    public Todo WithTitle(string newTitle)
     {
         if (string.IsNullOrWhiteSpace(newTitle))
             throw new ArgumentException("Title cannot be empty or null", nameof(newTitle));
 
-        Title = newTitle;
+        return this with { Title = newTitle };
     }
 }

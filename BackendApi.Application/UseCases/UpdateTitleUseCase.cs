@@ -21,8 +21,8 @@ public class UpdateTitleUseCase
         if (todo == null)
             return null;
 
-        todo.UpdateTitle(newTitle);
-        _repository.Update(todo);
-        return todo;
+        var updated = todo.WithTitle(newTitle);
+        _repository.Update(updated);
+        return updated;
     }
 }

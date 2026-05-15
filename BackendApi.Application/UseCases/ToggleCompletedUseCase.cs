@@ -18,8 +18,8 @@ public class ToggleCompletedUseCase
         if (todo == null)
             return null;
 
-        todo.ToggleCompleted();
-        _repository.Update(todo);
-        return todo;
+        var toggled = todo.ToggleCompleted();
+        _repository.Update(toggled);
+        return toggled;
     }
 }

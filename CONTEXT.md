@@ -39,6 +39,9 @@ Primary contract source:
 - `docs/api-contract.md`
 
 ## Domain Model
+Domain models are immutable. State changes return new instances (copy-on write).
+
+`Todo` is an immutable record. State changes return new instances (copy-on-write).
 
 `Todo` fields:
 
@@ -54,6 +57,7 @@ Invariants:
 - Completion changes through toggle behavior.
 - Updating title preserves identity, completion state, and creation time.
 - Missing-id deletes are idempotent at repository/use-case boundary.
+- `Todo` instances are immutable — `WithTitle()` and `ToggleCompleted()` return new instances.
 
 ## API
 

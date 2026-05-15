@@ -41,10 +41,10 @@ public class ListTodosUseCaseTests
         var todo2 = _createUseCase.Execute("Task 2");
         var todo3 = _createUseCase.Execute("Task 3");
         
-        todo1.ToggleCompleted();
-        _repository.Update(todo1);
-        todo3.ToggleCompleted();
-        _repository.Update(todo3);
+        var toggled1 = todo1.ToggleCompleted();
+        _repository.Update(toggled1);
+        var toggled3 = todo3.ToggleCompleted();
+        _repository.Update(toggled3);
 
         // Act
         var result = _useCase.Execute(completed: true, search: null);
@@ -62,8 +62,8 @@ public class ListTodosUseCaseTests
         var todo2 = _createUseCase.Execute("Task 2");
         var todo3 = _createUseCase.Execute("Task 3");
         
-        todo1.ToggleCompleted();
-        _repository.Update(todo1);
+        var toggled1 = todo1.ToggleCompleted();
+        _repository.Update(toggled1);
 
         // Act
         var result = _useCase.Execute(completed: false, search: null);
@@ -112,10 +112,10 @@ public class ListTodosUseCaseTests
         var todo2 = _createUseCase.Execute("Buy groceries");
         var todo3 = _createUseCase.Execute("Walk dog");
         
-        todo1.ToggleCompleted();
-        _repository.Update(todo1);
-        todo2.ToggleCompleted();
-        _repository.Update(todo2);
+        var toggled1 = todo1.ToggleCompleted();
+        _repository.Update(toggled1);
+        var toggled2 = todo2.ToggleCompleted();
+        _repository.Update(toggled2);
 
         // Act
         var result = _useCase.Execute(completed: true, search: "Buy");
