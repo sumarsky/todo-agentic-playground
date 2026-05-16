@@ -1,4 +1,4 @@
-Status: ready-for-agent
+Status: done
 
 # 01-postgres-foundation-migration-runner
 

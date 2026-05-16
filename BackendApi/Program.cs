@@ -4,11 +4,13 @@ using BackendApi.Infrastructure;
 using BackendApi.Application.UseCases;
 using BackendApi.Contracts;
 using BackendApi.Mappers;
+using BackendApi.Storage.Postgres;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure();
+builder.Services.AddPostgresStorage(builder.Configuration);
 
 // Configure CORS
 builder.Services.AddCors(options =>
