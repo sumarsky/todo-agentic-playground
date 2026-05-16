@@ -155,6 +155,43 @@ public class PostgresTodoRepositoryTests : IAsyncLifetime
     }
 
     [Fact]
+    public async Task UpdateAsync_PersistsChanges_CanRetrieveUpdated()
+    {
+        // Arrange
+        var todo = new Todo(Guid.NewGuid(), "Original title");
+        await _repository!.AddAsync(todo);
+
+        var updated = todo.WithTitle("Updated title");
+
+        // Act
+        await _repository.UpdateAsync(updated);
+        var retrieved = await _repository.GetByIdAsync(todo.Id);
+
+        // Assert
+        Assert.NotNull(retrieved);
+        Assert.Equal("Updated title", retrieved.Title);
+        Assert.Equal(todo.Id, retrieved.Id);
+    }
+
+    [Fact]
+    public async Task UpdateAsync_PersistsCompletedToggle_CanRetrieveUpdated()
+    {
+        // Arrange
+        var todo = new Todo(Guid.NewGuid(), "Test todo");
+        await _repository!.AddAsync(todo);
+
+        var toggled = todo.ToggleCompleted();
+
+        // Act
+        await _repository.UpdateAsync(toggled);
+        var retrieved = await _repository.GetByIdAsync(todo.Id);
+
+        // Assert
+        Assert.NotNull(retrieved);
+        Assert.True(retrieved.Completed);
+    }
+
+    [Fact]
     public async Task GetAllAsync_CombineCompletedAndSearch_ReturnsCorrectResults()
     {
         // Arrange
@@ -181,5 +218,104 @@ public class PostgresTodoRepositoryTests : IAsyncLifetime
         Assert.Equal(2, result.Count);
         Assert.All(result, t => Assert.True(t.Completed));
         Assert.All(result, t => Assert.Contains("Buy", t.Title));
+    }
+
+    [Fact]
+    public async Task DeleteAsync_RemovesTodo_CannotRetrieveAfter()
+    {
+        // Arrange
+        var todo = new Todo(Guid.NewGuid(), "To delete");
+        await _repository!.AddAsync(todo);
+        Assert.NotNull(await _repository.GetByIdAsync(todo.Id));
+
+        // Act
+        await _repository.DeleteAsync(todo.Id);
+
+        // Assert
+        Assert.Null(await _repository.GetByIdAsync(todo.Id));
+    }
+
+    [Fact]
+    public async Task DeleteAsync_NonExistentId_DoesNotThrow()
+    {
+        // Act & Assert
+        await _repository!.DeleteAsync(Guid.NewGuid());
+    }
+
+    [Fact]
+    public async Task DeleteAsync_PreservesOtherTodos()
+    {
+        // Arrange
+        var todo1 = new Todo(Guid.NewGuid(), "Todo 1");
+        var todo2 = new Todo(Guid.NewGuid(), "Todo 2");
+        var todo3 = new Todo(Guid.NewGuid(), "Todo 3");
+
+        await _repository!.AddAsync(todo1);
+        await _repository.AddAsync(todo2);
+        await _repository.AddAsync(todo3);
+
+        // Act
+        await _repository.DeleteAsync(todo2.Id);
+
+        // Assert
+        Assert.NotNull(await _repository.GetByIdAsync(todo1.Id));
+        Assert.Null(await _repository.GetByIdAsync(todo2.Id));
+        Assert.NotNull(await _repository.GetByIdAsync(todo3.Id));
+    }
+
+    [Fact]
+    public async Task DeleteByIdsAsync_RemovesMultipleTodos_CannotRetrieveAfter()
+    {
+        // Arrange
+        var todo1 = new Todo(Guid.NewGuid(), "Todo 1");
+        var todo2 = new Todo(Guid.NewGuid(), "Todo 2");
+        var todo3 = new Todo(Guid.NewGuid(), "Todo 3");
+
+        await _repository!.AddAsync(todo1);
+        await _repository.AddAsync(todo2);
+        await _repository.AddAsync(todo3);
+
+        var idsToDelete = new[] { todo1.Id, todo2.Id };
+
+        // Act
+        await _repository.DeleteByIdsAsync(idsToDelete);
+
+        // Assert
+        Assert.Null(await _repository.GetByIdAsync(todo1.Id));
+        Assert.Null(await _repository.GetByIdAsync(todo2.Id));
+        Assert.NotNull(await _repository.GetByIdAsync(todo3.Id));
+    }
+
+    [Fact]
+    public async Task DeleteByIdsAsync_WithEmptyList_DoesNotThrow()
+    {
+        // Act & Assert
+        await _repository!.DeleteByIdsAsync(Array.Empty<Guid>());
+    }
+
+    [Fact]
+    public async Task DeleteByIdsAsync_PreservesUnaffectedTodos()
+    {
+        // Arrange
+        var todo1 = new Todo(Guid.NewGuid(), "Todo 1");
+        var todo2 = new Todo(Guid.NewGuid(), "Todo 2");
+        var todo3 = new Todo(Guid.NewGuid(), "Todo 3");
+        var todo4 = new Todo(Guid.NewGuid(), "Todo 4");
+
+        await _repository!.AddAsync(todo1);
+        await _repository.AddAsync(todo2);
+        await _repository.AddAsync(todo3);
+        await _repository.AddAsync(todo4);
+
+        var idsToDelete = new[] { todo1.Id, todo3.Id };
+
+        // Act
+        await _repository.DeleteByIdsAsync(idsToDelete);
+
+        // Assert
+        Assert.Null(await _repository.GetByIdAsync(todo1.Id));
+        Assert.NotNull(await _repository.GetByIdAsync(todo2.Id));
+        Assert.Null(await _repository.GetByIdAsync(todo3.Id));
+        Assert.NotNull(await _repository.GetByIdAsync(todo4.Id));
     }
 }
