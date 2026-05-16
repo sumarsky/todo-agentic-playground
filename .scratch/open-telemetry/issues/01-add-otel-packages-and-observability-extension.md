@@ -1,6 +1,6 @@
 # 01 — Add OTel packages and create ObservabilityExtensions
 
-Status: ready-for-agent
+Status: done
 
 ## Description
 

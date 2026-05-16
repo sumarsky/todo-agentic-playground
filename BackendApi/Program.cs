@@ -3,10 +3,12 @@ using BackendApi.Application;
 using BackendApi.Application.UseCases;
 using BackendApi.Contracts;
 using BackendApi.Mappers;
+using BackendApi.Observability;
 using BackendApi.Storage.Postgres;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.AddObservability();
 builder.Services.AddApplication();
 builder.Services.AddPostgresStorage(builder.Configuration);
 
