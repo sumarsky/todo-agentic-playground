@@ -8,11 +8,11 @@ namespace BackendApi.Tests;
 public class TodoApiIntegrationTests : IAsyncLifetime
 {
     private HttpClient _client = null!;
-    private WebApplicationFactory<Program> _factory = null!;
+    private TestWebApplicationFactory _factory = null!;
 
     public async Task InitializeAsync()
     {
-        _factory = new WebApplicationFactory<Program>();
+        _factory = new TestWebApplicationFactory();
         _client = _factory.CreateClient();
         await Task.CompletedTask;
     }

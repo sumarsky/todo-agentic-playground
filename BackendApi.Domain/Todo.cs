@@ -18,6 +18,15 @@ public record Todo
         CreatedAt = DateTime.UtcNow;
     }
 
+    // Dapper materialization constructor
+    public Todo(Guid id, string title, bool completed, DateTime created_at)
+    {
+        Id = id;
+        Title = title;
+        Completed = completed;
+        CreatedAt = created_at;
+    }
+
     public Todo ToggleCompleted() => this with { Completed = !Completed };
 
     public Todo WithTitle(string newTitle)

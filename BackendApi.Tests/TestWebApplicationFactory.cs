@@ -1,0 +1,33 @@
+using BackendApi.Application.Ports;
+using BackendApi.Tests.TestDoubles;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.Extensions.DependencyInjection;
+
+namespace BackendApi.Tests;
+
+public class TestWebApplicationFactory : WebApplicationFactory<Program>
+{
+    protected override void ConfigureWebHost(IWebHostBuilder builder)
+    {
+        builder.ConfigureServices(services =>
+        {
+            var descriptor = services.SingleOrDefault(
+                d => d.ServiceType == typeof(ITodoRepository));
+            if (descriptor != null)
+            {
+                services.Remove(descriptor);
+            }
+
+            services.AddSingleton<ITodoRepository, FakeTodoRepository>();
+
+            var migrationDescriptor = services.SingleOrDefault(
+                d => d.ServiceType == typeof(Microsoft.Extensions.Hosting.IHostedService)
+                     && d.ImplementationType?.FullName == "BackendApi.Storage.Postgres.MigrationRunner");
+            if (migrationDescriptor != null)
+            {
+                services.Remove(migrationDescriptor);
+            }
+        });
+    }
+}

@@ -54,18 +54,30 @@ public class PostgresTodoRepository : ITodoRepository
         return results.ToList().AsReadOnly();
     }
 
-    public Task UpdateAsync(Todo todo, CancellationToken ct = default)
+    public async Task UpdateAsync(Todo todo, CancellationToken ct = default)
     {
-        throw new NotImplementedException();
+        await using var conn = await _dataSource.OpenConnectionAsync(ct);
+        await conn.ExecuteAsync(
+            "UPDATE todos SET title = @Title, completed = @Completed WHERE id = @Id",
+            new { todo.Id, todo.Title, todo.Completed },
+            commandTimeout: 30);
     }
 
-    public Task DeleteAsync(Guid id, CancellationToken ct = default)
+    public async Task DeleteAsync(Guid id, CancellationToken ct = default)
     {
-        throw new NotImplementedException();
+        await using var conn = await _dataSource.OpenConnectionAsync(ct);
+        await conn.ExecuteAsync(
+            "DELETE FROM todos WHERE id = @Id",
+            new { Id = id },
+            commandTimeout: 30);
     }
 
-    public Task DeleteByIdsAsync(IEnumerable<Guid> ids, CancellationToken ct = default)
+    public async Task DeleteByIdsAsync(IEnumerable<Guid> ids, CancellationToken ct = default)
     {
-        throw new NotImplementedException();
+        await using var conn = await _dataSource.OpenConnectionAsync(ct);
+        await conn.ExecuteAsync(
+            "DELETE FROM todos WHERE id = ANY(@Ids)",
+            new { Ids = ids.ToArray() },
+            commandTimeout: 30);
     }
 }
