@@ -163,3 +163,12 @@ Engineering skill configuration:
 - `docs/agents/domain.md`
 
 Issues and PRDs live in `.scratch/`.
+
+## Observability
+
+OpenTelemetry console observability via `Microsoft.Extensions.Telemetry`:
+- **Logs**: JSON format, enriched with trace ID + HTTP method, path, status code.
+- **Traces**: HTTP request spans only (auto-instrumentation) for log correlation.
+- **Metrics**: HTTP request metrics (count, duration, status code) exported to console every 5 seconds.
+- Setup lives in `BackendApi/Observability/` as a named extension method called by the composition root.
+- Global exception handler emits structured error logs with trace ID and exception details.
