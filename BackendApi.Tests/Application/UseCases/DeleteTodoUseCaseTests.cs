@@ -1,5 +1,5 @@
 using BackendApi.Application.UseCases;
-using BackendApi.Infrastructure;
+using BackendApi.Tests.TestDoubles;
 using Xunit;
 
 namespace BackendApi.Tests.Application.UseCases;
@@ -10,7 +10,7 @@ public class DeleteTodoUseCaseTests
     public async Task DeleteTodo_WithValidId_RemovesTodo()
     {
         // Arrange
-        var repository = new InMemoryTodoRepository();
+        var repository = new FakeTodoRepository();
         var createUseCase = new CreateTodoUseCase(repository);
         var useCase = new DeleteTodoUseCase(repository);
 
@@ -28,7 +28,7 @@ public class DeleteTodoUseCaseTests
     public async Task DeleteTodo_NonExistentId_DoesNotThrow()
     {
         // Arrange
-        var repository = new InMemoryTodoRepository();
+        var repository = new FakeTodoRepository();
         var useCase = new DeleteTodoUseCase(repository);
 
         // Act & Assert
@@ -39,7 +39,7 @@ public class DeleteTodoUseCaseTests
     public async Task DeleteTodo_PreservesOtherTodos()
     {
         // Arrange
-        var repository = new InMemoryTodoRepository();
+        var repository = new FakeTodoRepository();
         var createUseCase = new CreateTodoUseCase(repository);
         var useCase = new DeleteTodoUseCase(repository);
 

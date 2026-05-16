@@ -1,5 +1,5 @@
 using BackendApi.Application.UseCases;
-using BackendApi.Infrastructure;
+using BackendApi.Tests.TestDoubles;
 using Xunit;
 
 namespace BackendApi.Tests.Application.UseCases;
@@ -9,7 +9,7 @@ public class ToggleCompletedUseCaseTests
     [Fact]
     public async Task ToggleCompleted_FromFalseToTrue_UpdatesTodo()
     {
-        var repository = new InMemoryTodoRepository();
+        var repository = new FakeTodoRepository();
         var createUseCase = new CreateTodoUseCase(repository);
         var useCase = new ToggleCompletedUseCase(repository);
 
@@ -25,7 +25,7 @@ public class ToggleCompletedUseCaseTests
     [Fact]
     public async Task ToggleCompleted_FromTrueToFalse_UpdatesTodo()
     {
-        var repository = new InMemoryTodoRepository();
+        var repository = new FakeTodoRepository();
         var createUseCase = new CreateTodoUseCase(repository);
         var useCase = new ToggleCompletedUseCase(repository);
 
@@ -43,7 +43,7 @@ public class ToggleCompletedUseCaseTests
     [Fact]
     public async Task ToggleCompleted_SavesChangesToRepository()
     {
-        var repository = new InMemoryTodoRepository();
+        var repository = new FakeTodoRepository();
         var createUseCase = new CreateTodoUseCase(repository);
         var useCase = new ToggleCompletedUseCase(repository);
 
@@ -59,7 +59,7 @@ public class ToggleCompletedUseCaseTests
     [Fact]
     public async Task ToggleCompleted_TodoNotFound_ReturnsNull()
     {
-        var repository = new InMemoryTodoRepository();
+        var repository = new FakeTodoRepository();
         var useCase = new ToggleCompletedUseCase(repository);
 
         var result = await useCase.Execute(Guid.NewGuid());

@@ -1,9 +1,9 @@
 using BackendApi.Application.Ports;
 using BackendApi.Domain;
 
-namespace BackendApi.Infrastructure;
+namespace BackendApi.Tests.TestDoubles;
 
-public class InMemoryTodoRepository : ITodoRepository
+public class FakeTodoRepository : ITodoRepository
 {
     private readonly Dictionary<Guid, Todo> _todos = new();
     private readonly object _lock = new();

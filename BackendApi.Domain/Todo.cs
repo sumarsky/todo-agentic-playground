@@ -18,17 +18,6 @@ public record Todo
         CreatedAt = DateTime.UtcNow;
     }
 
-    public Todo(Guid id, string title, bool completed, DateTime createdAt)
-    {
-        if (string.IsNullOrWhiteSpace(title))
-            throw new ArgumentException("Title cannot be empty or null", nameof(title));
-
-        Id = id;
-        Title = title;
-        Completed = completed;
-        CreatedAt = createdAt;
-    }
-
     public Todo ToggleCompleted() => this with { Completed = !Completed };
 
     public Todo WithTitle(string newTitle)

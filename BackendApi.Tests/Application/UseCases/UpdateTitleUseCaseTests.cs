@@ -1,6 +1,6 @@
 using BackendApi.Application.UseCases;
 using BackendApi.Domain;
-using BackendApi.Infrastructure;
+using BackendApi.Tests.TestDoubles;
 using Xunit;
 
 namespace BackendApi.Tests.Application.UseCases;
@@ -11,7 +11,7 @@ public class UpdateTitleUseCaseTests
     public async Task UpdateTitle_WithValidTitle_UpdatesTodo()
     {
         // Arrange
-        var repository = new InMemoryTodoRepository();
+        var repository = new FakeTodoRepository();
         var createUseCase = new CreateTodoUseCase(repository);
         var useCase = new UpdateTitleUseCase(repository);
 
@@ -31,7 +31,7 @@ public class UpdateTitleUseCaseTests
     public async Task UpdateTitle_SavesChangesToRepository()
     {
         // Arrange
-        var repository = new InMemoryTodoRepository();
+        var repository = new FakeTodoRepository();
         var createUseCase = new CreateTodoUseCase(repository);
         var useCase = new UpdateTitleUseCase(repository);
 
@@ -50,7 +50,7 @@ public class UpdateTitleUseCaseTests
     public async Task UpdateTitle_WithEmptyTitle_ThrowsArgumentException()
     {
         // Arrange
-        var repository = new InMemoryTodoRepository();
+        var repository = new FakeTodoRepository();
         var useCase = new UpdateTitleUseCase(repository);
 
         // Act & Assert
@@ -61,7 +61,7 @@ public class UpdateTitleUseCaseTests
     public async Task UpdateTitle_TodoNotFound_ReturnsNull()
     {
         // Arrange
-        var repository = new InMemoryTodoRepository();
+        var repository = new FakeTodoRepository();
         var useCase = new UpdateTitleUseCase(repository);
 
         // Act

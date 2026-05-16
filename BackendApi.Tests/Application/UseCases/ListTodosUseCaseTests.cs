@@ -1,19 +1,19 @@
 using BackendApi.Application.UseCases;
 using BackendApi.Domain;
-using BackendApi.Infrastructure;
+using BackendApi.Tests.TestDoubles;
 using Xunit;
 
 namespace BackendApi.Tests.Application.UseCases;
 
 public class ListTodosUseCaseTests
 {
-    private readonly InMemoryTodoRepository _repository;
+    private readonly FakeTodoRepository _repository;
     private readonly CreateTodoUseCase _createUseCase;
     private readonly ListTodosUseCase _useCase;
 
     public ListTodosUseCaseTests()
     {
-        _repository = new InMemoryTodoRepository();
+        _repository = new FakeTodoRepository();
         _createUseCase = new CreateTodoUseCase(_repository);
         _useCase = new ListTodosUseCase(_repository);
     }

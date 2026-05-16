@@ -1,39 +1,25 @@
 using System.Net;
 using System.Text.Json;
-using Testcontainers.PostgreSql;
 using Xunit;
 
 namespace BackendApi.Tests;
 
 public class ApiIntegrationTests : IAsyncLifetime
 {
-    private readonly PostgreSqlContainer _postgresContainer = new PostgreSqlBuilder()
-        .WithDatabase("testdb")
-        .WithUsername("test")
-        .WithPassword("test")
-        .Build();
-
     private HttpClient _client = null!;
     private WebApplicationFactory<Program> _factory = null!;
 
     public async Task InitializeAsync()
     {
-        await _postgresContainer.StartAsync();
-
-        var connectionString = _postgresContainer.GetConnectionString();
-        _factory = new WebApplicationFactory<Program>()
-            .WithWebHostBuilder(builder =>
-            {
-                builder.UseSetting("ConnectionStrings:Default", connectionString);
-            });
+        _factory = new WebApplicationFactory<Program>();
         _client = _factory.CreateClient();
+        await Task.CompletedTask;
     }
 
     public async Task DisposeAsync()
     {
         _client.Dispose();
         await _factory.DisposeAsync();
-        await _postgresContainer.StopAsync();
     }
 
     [Fact]

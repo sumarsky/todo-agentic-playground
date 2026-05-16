@@ -1,6 +1,6 @@
 using BackendApi.Application.UseCases;
 using BackendApi.Domain;
-using BackendApi.Infrastructure;
+using BackendApi.Tests.TestDoubles;
 using Xunit;
 
 namespace BackendApi.Tests.Application.UseCases;
@@ -11,7 +11,7 @@ public class CreateTodoUseCaseTests
     public async Task CreateTodo_WithValidTitle_ReturnsTodoWithId()
     {
         // Arrange
-        var repository = new InMemoryTodoRepository();
+        var repository = new FakeTodoRepository();
         var useCase = new CreateTodoUseCase(repository);
         var title = "Buy groceries";
 
@@ -29,7 +29,7 @@ public class CreateTodoUseCaseTests
     public async Task CreateTodo_WithEmptyTitle_ThrowsArgumentException()
     {
         // Arrange
-        var repository = new InMemoryTodoRepository();
+        var repository = new FakeTodoRepository();
         var useCase = new CreateTodoUseCase(repository);
 
         // Act & Assert
@@ -40,7 +40,7 @@ public class CreateTodoUseCaseTests
     public async Task CreateTodo_WithNullTitle_ThrowsArgumentException()
     {
         // Arrange
-        var repository = new InMemoryTodoRepository();
+        var repository = new FakeTodoRepository();
         var useCase = new CreateTodoUseCase(repository);
 
         // Act & Assert
@@ -51,7 +51,7 @@ public class CreateTodoUseCaseTests
     public async Task CreateTodo_SavesToRepository()
     {
         // Arrange
-        var repository = new InMemoryTodoRepository();
+        var repository = new FakeTodoRepository();
         var useCase = new CreateTodoUseCase(repository);
         var title = "Test todo";
 

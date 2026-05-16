@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BackendApi.Application\BackendApi.Application.csproj" />
-    <ProjectReference Include="..\BackendApi.Infrastructure\BackendApi.Infrastructure.csproj" />
     <ProjectReference Include="..\BackendApi.Storage.Postgres\BackendApi.Storage.Postgres.csproj" />
   </ItemGroup>
 

@@ -1,5 +1,5 @@
 using BackendApi.Application.UseCases;
-using BackendApi.Infrastructure;
+using BackendApi.Tests.TestDoubles;
 using Xunit;
 
 namespace BackendApi.Tests.Application.UseCases;
@@ -10,7 +10,7 @@ public class BulkDeleteTodoUseCaseTests
     public async Task BulkDeleteTodos_WithMultipleIds_RemovesAllTodos()
     {
         // Arrange
-        var repository = new InMemoryTodoRepository();
+        var repository = new FakeTodoRepository();
         var createUseCase = new CreateTodoUseCase(repository);
         var useCase = new BulkDeleteTodoUseCase(repository);
 
@@ -33,7 +33,7 @@ public class BulkDeleteTodoUseCaseTests
     public async Task BulkDeleteTodos_WithEmptyList_DoesNotThrow()
     {
         // Arrange
-        var repository = new InMemoryTodoRepository();
+        var repository = new FakeTodoRepository();
         var useCase = new BulkDeleteTodoUseCase(repository);
 
         // Act & Assert
@@ -44,7 +44,7 @@ public class BulkDeleteTodoUseCaseTests
     public async Task BulkDeleteTodos_PreservesUnaffectedTodos()
     {
         // Arrange
-        var repository = new InMemoryTodoRepository();
+        var repository = new FakeTodoRepository();
         var createUseCase = new CreateTodoUseCase(repository);
         var useCase = new BulkDeleteTodoUseCase(repository);
 
