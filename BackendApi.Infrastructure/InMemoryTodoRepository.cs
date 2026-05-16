@@ -8,32 +8,45 @@ public class InMemoryTodoRepository : ITodoRepository
     private readonly Dictionary<Guid, Todo> _todos = new();
     private readonly object _lock = new();
 
-    public void Add(Todo todo)
+    public Task AddAsync(Todo todo, CancellationToken ct = default)
     {
         lock (_lock)
         {
             _todos[todo.Id] = todo;
         }
+        return Task.CompletedTask;
     }
 
-    public Todo? GetById(Guid id)
+    public Task<Todo?> GetByIdAsync(Guid id, CancellationToken ct = default)
     {
         lock (_lock)
         {
             _todos.TryGetValue(id, out var todo);
-            return todo;
+            return Task.FromResult(todo);
         }
     }
 
-    public IReadOnlyList<Todo> GetAll()
+    public Task<IReadOnlyList<Todo>> GetAllAsync(bool? completed = null, string? search = null, CancellationToken ct = default)
     {
         lock (_lock)
         {
-            return _todos.Values.ToList().AsReadOnly();
+            var todos = _todos.Values.ToList();
+
+            if (completed.HasValue)
+            {
+                todos = todos.Where(t => t.Completed == completed.Value).ToList();
+            }
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                todos = todos.Where(t => t.Title.Contains(search, StringComparison.OrdinalIgnoreCase)).ToList();
+            }
+
+            return Task.FromResult<IReadOnlyList<Todo>>(todos.AsReadOnly());
         }
     }
 
-    public void Update(Todo todo)
+    public Task UpdateAsync(Todo todo, CancellationToken ct = default)
     {
         lock (_lock)
         {
@@ -42,17 +55,19 @@ public class InMemoryTodoRepository : ITodoRepository
                 _todos[todo.Id] = todo;
             }
         }
+        return Task.CompletedTask;
     }
 
-    public void Delete(Guid id)
+    public Task DeleteAsync(Guid id, CancellationToken ct = default)
     {
         lock (_lock)
         {
             _todos.Remove(id);
         }
+        return Task.CompletedTask;
     }
 
-    public void DeleteByIds(IEnumerable<Guid> ids)
+    public Task DeleteByIdsAsync(IEnumerable<Guid> ids, CancellationToken ct = default)
     {
         lock (_lock)
         {
@@ -61,5 +76,6 @@ public class InMemoryTodoRepository : ITodoRepository
                 _todos.Remove(id);
             }
         }
+        return Task.CompletedTask;
     }
 }

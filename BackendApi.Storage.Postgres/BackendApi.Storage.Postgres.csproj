@@ -14,4 +14,9 @@
     <PackageReference Include="Npgsql" Version="10.0.2" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\BackendApi.Application\BackendApi.Application.csproj" />
+    <ProjectReference Include="..\BackendApi.Domain\BackendApi.Domain.csproj" />
+  </ItemGroup>
+
 </Project>

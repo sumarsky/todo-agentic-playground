@@ -19,35 +19,35 @@ public class ListTodosUseCaseTests
     }
 
     [Fact]
-    public void ListTodos_NoFilter_ReturnsAllTodos()
+    public async Task ListTodos_NoFilter_ReturnsAllTodos()
     {
         // Arrange
-        _createUseCase.Execute("Buy milk");
-        _createUseCase.Execute("Walk dog");
-        _createUseCase.Execute("Code review");
+        await _createUseCase.Execute("Buy milk");
+        await _createUseCase.Execute("Walk dog");
+        await _createUseCase.Execute("Code review");
 
         // Act
-        var result = _useCase.Execute(completed: null, search: null);
+        var result = await _useCase.Execute(completed: null, search: null);
 
         // Assert
         Assert.Equal(3, result.Count);
     }
 
     [Fact]
-    public void ListTodos_FilterCompleted_ReturnsOnlyCompletedTodos()
+    public async Task ListTodos_FilterCompleted_ReturnsOnlyCompletedTodos()
     {
         // Arrange
-        var todo1 = _createUseCase.Execute("Task 1");
-        var todo2 = _createUseCase.Execute("Task 2");
-        var todo3 = _createUseCase.Execute("Task 3");
+        var todo1 = await _createUseCase.Execute("Task 1");
+        var todo2 = await _createUseCase.Execute("Task 2");
+        var todo3 = await _createUseCase.Execute("Task 3");
         
         var toggled1 = todo1.ToggleCompleted();
-        _repository.Update(toggled1);
+        await _repository.UpdateAsync(toggled1);
         var toggled3 = todo3.ToggleCompleted();
-        _repository.Update(toggled3);
+        await _repository.UpdateAsync(toggled3);
 
         // Act
-        var result = _useCase.Execute(completed: true, search: null);
+        var result = await _useCase.Execute(completed: true, search: null);
 
         // Assert
         Assert.Equal(2, result.Count);
@@ -55,18 +55,18 @@ public class ListTodosUseCaseTests
     }
 
     [Fact]
-    public void ListTodos_FilterNotCompleted_ReturnsOnlyIncompleteTodos()
+    public async Task ListTodos_FilterNotCompleted_ReturnsOnlyIncompleteTodos()
     {
         // Arrange
-        var todo1 = _createUseCase.Execute("Task 1");
-        var todo2 = _createUseCase.Execute("Task 2");
-        var todo3 = _createUseCase.Execute("Task 3");
+        var todo1 = await _createUseCase.Execute("Task 1");
+        var todo2 = await _createUseCase.Execute("Task 2");
+        var todo3 = await _createUseCase.Execute("Task 3");
         
         var toggled1 = todo1.ToggleCompleted();
-        _repository.Update(toggled1);
+        await _repository.UpdateAsync(toggled1);
 
         // Act
-        var result = _useCase.Execute(completed: false, search: null);
+        var result = await _useCase.Execute(completed: false, search: null);
 
         // Assert
         Assert.Equal(2, result.Count);
@@ -74,15 +74,15 @@ public class ListTodosUseCaseTests
     }
 
     [Fact]
-    public void ListTodos_SearchByTitle_ReturnsMatchingTodos()
+    public async Task ListTodos_SearchByTitle_ReturnsMatchingTodos()
     {
         // Arrange
-        _createUseCase.Execute("Buy groceries");
-        _createUseCase.Execute("Buy milk");
-        _createUseCase.Execute("Walk dog");
+        await _createUseCase.Execute("Buy groceries");
+        await _createUseCase.Execute("Buy milk");
+        await _createUseCase.Execute("Walk dog");
 
         // Act
-        var result = _useCase.Execute(completed: null, search: "Buy");
+        var result = await _useCase.Execute(completed: null, search: "Buy");
 
         // Assert
         Assert.Equal(2, result.Count);
@@ -90,14 +90,14 @@ public class ListTodosUseCaseTests
     }
 
     [Fact]
-    public void ListTodos_SearchCaseInsensitive()
+    public async Task ListTodos_SearchCaseInsensitive()
     {
         // Arrange
-        _createUseCase.Execute("Buy Groceries");
-        _createUseCase.Execute("Walk dog");
+        await _createUseCase.Execute("Buy Groceries");
+        await _createUseCase.Execute("Walk dog");
 
         // Act
-        var result = _useCase.Execute(completed: null, search: "buy");
+        var result = await _useCase.Execute(completed: null, search: "buy");
 
         // Assert
         Assert.Single(result);
@@ -105,20 +105,20 @@ public class ListTodosUseCaseTests
     }
 
     [Fact]
-    public void ListTodos_CombineFiltersAndSearch()
+    public async Task ListTodos_CombineFiltersAndSearch()
     {
         // Arrange
-        var todo1 = _createUseCase.Execute("Buy milk");
-        var todo2 = _createUseCase.Execute("Buy groceries");
-        var todo3 = _createUseCase.Execute("Walk dog");
+        var todo1 = await _createUseCase.Execute("Buy milk");
+        var todo2 = await _createUseCase.Execute("Buy groceries");
+        var todo3 = await _createUseCase.Execute("Walk dog");
         
         var toggled1 = todo1.ToggleCompleted();
-        _repository.Update(toggled1);
+        await _repository.UpdateAsync(toggled1);
         var toggled2 = todo2.ToggleCompleted();
-        _repository.Update(toggled2);
+        await _repository.UpdateAsync(toggled2);
 
         // Act
-        var result = _useCase.Execute(completed: true, search: "Buy");
+        var result = await _useCase.Execute(completed: true, search: "Buy");
 
         // Assert
         Assert.Equal(2, result.Count);

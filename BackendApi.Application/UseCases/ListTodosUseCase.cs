@@ -12,20 +12,8 @@ public class ListTodosUseCase
         _repository = repository;
     }
 
-    public IReadOnlyList<Todo> Execute(bool? completed, string? search)
+    public async Task<IReadOnlyList<Todo>> Execute(bool? completed = null, string? search = null, CancellationToken ct = default)
     {
-        var todos = _repository.GetAll().ToList();
-
-        if (completed.HasValue)
-        {
-            todos = todos.Where(t => t.Completed == completed.Value).ToList();
-        }
-
-        if (!string.IsNullOrWhiteSpace(search))
-        {
-            todos = todos.Where(t => t.Title.Contains(search, StringComparison.OrdinalIgnoreCase)).ToList();
-        }
-
-        return todos.AsReadOnly();
+        return await _repository.GetAllAsync(completed, search, ct);
     }
 }

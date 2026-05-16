@@ -12,14 +12,14 @@ public class ToggleCompletedUseCase
         _repository = repository;
     }
 
-    public Todo? Execute(Guid id)
+    public async Task<Todo?> Execute(Guid id, CancellationToken ct = default)
     {
-        var todo = _repository.GetById(id);
+        var todo = await _repository.GetByIdAsync(id, ct);
         if (todo == null)
             return null;
 
         var toggled = todo.ToggleCompleted();
-        _repository.Update(toggled);
+        await _repository.UpdateAsync(toggled, ct);
         return toggled;
     }
 }

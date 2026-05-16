@@ -1,3 +1,4 @@
+using BackendApi.Application.Ports;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
@@ -12,6 +13,7 @@ public static class DependencyInjection
             ?? throw new InvalidOperationException("Connection string 'Default' not found.");
 
         services.AddSingleton<NpgsqlDataSource>(NpgsqlDataSource.Create(connectionString));
+        services.AddTransient<ITodoRepository, PostgresTodoRepository>();
         services.AddHostedService<MigrationRunner>();
 
         return services;

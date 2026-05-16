@@ -8,7 +8,7 @@ namespace BackendApi.Tests.Application.UseCases;
 public class CreateTodoUseCaseTests
 {
     [Fact]
-    public void CreateTodo_WithValidTitle_ReturnsTodoWithId()
+    public async Task CreateTodo_WithValidTitle_ReturnsTodoWithId()
     {
         // Arrange
         var repository = new InMemoryTodoRepository();
@@ -16,7 +16,7 @@ public class CreateTodoUseCaseTests
         var title = "Buy groceries";
 
         // Act
-        var result = useCase.Execute(title);
+        var result = await useCase.Execute(title);
 
         // Assert
         Assert.NotNull(result);
@@ -26,29 +26,29 @@ public class CreateTodoUseCaseTests
     }
 
     [Fact]
-    public void CreateTodo_WithEmptyTitle_ThrowsArgumentException()
+    public async Task CreateTodo_WithEmptyTitle_ThrowsArgumentException()
     {
         // Arrange
         var repository = new InMemoryTodoRepository();
         var useCase = new CreateTodoUseCase(repository);
 
         // Act & Assert
-        Assert.Throws<ArgumentException>(() => useCase.Execute(""));
+        await Assert.ThrowsAsync<ArgumentException>(() => useCase.Execute(""));
     }
 
     [Fact]
-    public void CreateTodo_WithNullTitle_ThrowsArgumentException()
+    public async Task CreateTodo_WithNullTitle_ThrowsArgumentException()
     {
         // Arrange
         var repository = new InMemoryTodoRepository();
         var useCase = new CreateTodoUseCase(repository);
 
         // Act & Assert
-        Assert.Throws<ArgumentException>(() => useCase.Execute(null!));
+        await Assert.ThrowsAsync<ArgumentException>(() => useCase.Execute(null!));
     }
 
     [Fact]
-    public void CreateTodo_SavesToRepository()
+    public async Task CreateTodo_SavesToRepository()
     {
         // Arrange
         var repository = new InMemoryTodoRepository();
@@ -56,10 +56,10 @@ public class CreateTodoUseCaseTests
         var title = "Test todo";
 
         // Act
-        var created = useCase.Execute(title);
+        var created = await useCase.Execute(title);
 
         // Assert
-        var retrieved = repository.GetById(created.Id);
+        var retrieved = await repository.GetByIdAsync(created.Id);
         Assert.NotNull(retrieved);
         Assert.Equal(title, retrieved.Title);
     }

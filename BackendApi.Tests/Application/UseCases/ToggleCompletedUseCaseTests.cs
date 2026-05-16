@@ -7,62 +7,62 @@ namespace BackendApi.Tests.Application.UseCases;
 public class ToggleCompletedUseCaseTests
 {
     [Fact]
-    public void ToggleCompleted_FromFalseToTrue_UpdatesTodo()
+    public async Task ToggleCompleted_FromFalseToTrue_UpdatesTodo()
     {
         var repository = new InMemoryTodoRepository();
         var createUseCase = new CreateTodoUseCase(repository);
         var useCase = new ToggleCompletedUseCase(repository);
 
-        var todo = createUseCase.Execute("Test todo");
+        var todo = await createUseCase.Execute("Test todo");
         Assert.False(todo.Completed);
 
-        var result = useCase.Execute(todo.Id);
+        var result = await useCase.Execute(todo.Id);
 
         Assert.NotNull(result);
         Assert.True(result.Completed);
     }
 
     [Fact]
-    public void ToggleCompleted_FromTrueToFalse_UpdatesTodo()
+    public async Task ToggleCompleted_FromTrueToFalse_UpdatesTodo()
     {
         var repository = new InMemoryTodoRepository();
         var createUseCase = new CreateTodoUseCase(repository);
         var useCase = new ToggleCompletedUseCase(repository);
 
-        var todo = createUseCase.Execute("Test todo");
+        var todo = await createUseCase.Execute("Test todo");
         var toggled = todo.ToggleCompleted();
-        repository.Update(toggled);
+        await repository.UpdateAsync(toggled);
         Assert.True(toggled.Completed);
 
-        var result = useCase.Execute(toggled.Id);
+        var result = await useCase.Execute(toggled.Id);
 
         Assert.NotNull(result);
         Assert.False(result.Completed);
     }
 
     [Fact]
-    public void ToggleCompleted_SavesChangesToRepository()
+    public async Task ToggleCompleted_SavesChangesToRepository()
     {
         var repository = new InMemoryTodoRepository();
         var createUseCase = new CreateTodoUseCase(repository);
         var useCase = new ToggleCompletedUseCase(repository);
 
-        var todo = createUseCase.Execute("Test todo");
+        var todo = await createUseCase.Execute("Test todo");
 
-        useCase.Execute(todo.Id);
+        await useCase.Execute(todo.Id);
 
-        var retrieved = repository.GetById(todo.Id);
+        var retrieved = await repository.GetByIdAsync(todo.Id);
         Assert.NotNull(retrieved);
         Assert.True(retrieved.Completed);
     }
 
     [Fact]
-    public void ToggleCompleted_TodoNotFound_ReturnsNull()
+    public async Task ToggleCompleted_TodoNotFound_ReturnsNull()
     {
         var repository = new InMemoryTodoRepository();
         var useCase = new ToggleCompletedUseCase(repository);
 
-        var result = useCase.Execute(Guid.NewGuid());
+        var result = await useCase.Execute(Guid.NewGuid());
 
         Assert.Null(result);
     }
