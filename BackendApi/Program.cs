@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Microsoft.AspNetCore.Diagnostics;
 using BackendApi.Application;
 using BackendApi.Application.UseCases;
@@ -38,7 +39,21 @@ app.UseExceptionHandler(errorApp =>
         context.Response.ContentType = "application/json";
         
         var exceptionHandlerPathFeature = context.Features.Get<IExceptionHandlerPathFeature>();
-        var error = new { error = exceptionHandlerPathFeature?.Error?.Message ?? "An unexpected error occurred" };
+        var exception = exceptionHandlerPathFeature?.Error;
+        
+        var logger = context.RequestServices.GetRequiredService<ILogger<Program>>();
+        var traceId = Activity.Current?.TraceId.ToString() ?? "unknown";
+        
+        if (exception != null)
+        {
+            logger.LogError(exception,
+                "Unhandled exception. TraceId: {TraceId}, ExceptionType: {ExceptionType}, Message: {Message}",
+                traceId,
+                exception.GetType().FullName,
+                exception.Message);
+        }
+        
+        var error = new { error = exception?.Message ?? "An unexpected error occurred" };
         
         await context.Response.WriteAsJsonAsync(error);
     });

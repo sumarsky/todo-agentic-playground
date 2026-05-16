@@ -1,6 +1,6 @@
 # 02 — Wire ObservabilityExtensions into Program.cs and update exception handler
 
-Status: ready-for-agent
+Status: done
 
 ## Description
 
