@@ -1,6 +1,6 @@
 ## 03 - Inline add form
 
-**Status:** ready-for-agent
+**Status:** done
 
 ### Description
 

@@ -1,6 +1,7 @@
 import { useContext, useState } from 'react';
 import { TodoContext } from '../context/TodoContextValue';
 import { BulkDeleteButton } from './BulkDeleteButton';
+import { InlineAddForm } from './InlineAddForm';
 import { TodoItem } from './TodoItem';
 import { Toolbar } from './Toolbar';
 
@@ -8,7 +9,6 @@ export const TodoList = () => {
   const { todos, addTodo } = useContext(TodoContext);
   const [selectedIds, setSelectedIds] = useState([]);
   const [isAdding, setIsAdding] = useState(false);
-  const [title, setTitle] = useState('');
 
   const handleSelectionChange = (todoId, selected) => {
     setSelectedIds((current) => {
@@ -31,12 +31,12 @@ export const TodoList = () => {
     setIsAdding(true);
   };
 
-  const handleAddSubmit = async (event) => {
-    event.preventDefault();
-    const trimmedTitle = title.trim();
-    if (!trimmedTitle) return;
-    await addTodo(trimmedTitle);
-    setTitle('');
+  const handleAddSubmit = async (title) => {
+    await addTodo(title);
+    setIsAdding(false);
+  };
+
+  const handleAddCancel = () => {
     setIsAdding(false);
   };
 
@@ -54,21 +54,13 @@ export const TodoList = () => {
   return (
     <>
       <Toolbar onAddClick={handleAddClick} onSelectAll={handleSelectAll} isAllSelected={isAllSelected} />
-      {isAdding && (
-        <form onSubmit={handleAddSubmit} aria-label="Add todo">
-          <label htmlFor="todo-title">Todo title</label>
-          <input
-            id="todo-title"
-            type="text"
-            value={title}
-            onChange={(event) => setTitle(event.target.value)}
-            autoFocus
-          />
-          <button type="submit">Add todo</button>
-        </form>
-      )}
       <BulkDeleteButton selectedIds={selectedIds} />
       <ul aria-label="Todos">
+        {isAdding && (
+          <li>
+            <InlineAddForm onSubmit={handleAddSubmit} onCancel={handleAddCancel} />
+          </li>
+        )}
         {todos.map((todo) => (
           <li key={todo.id}>
             <TodoItem

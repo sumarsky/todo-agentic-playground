@@ -3,7 +3,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { TodoContext } from '../context/TodoContextValue';
 import { BulkDeleteButton } from './BulkDeleteButton';
 import { FilterBar } from './FilterBar';
-import { TodoForm } from './TodoForm';
+import { InlineAddForm } from './InlineAddForm';
 import { TodoItem } from './TodoItem';
 import { TodoList } from './TodoList';
 import { Toolbar } from './Toolbar';
@@ -164,36 +164,6 @@ describe('BulkDeleteButton', () => {
   });
 });
 
-describe('TodoForm', () => {
-  it('adds a todo with the entered title and clears the input', async () => {
-    const addTodo = vi.fn().mockResolvedValue([]);
-
-    renderWithTodos(<TodoForm />, { addTodo });
-
-    const input = screen.getByLabelText(/todo title/i);
-    fireEvent.change(input, { target: { value: 'Write component tests' } });
-    fireEvent.click(screen.getByRole('button', { name: /add todo/i }));
-
-    expect(addTodo).toHaveBeenCalledWith('Write component tests');
-    await waitFor(() => {
-      expect(input).toHaveValue('');
-    });
-  });
-
-  it('does not add a todo when the title is blank', () => {
-    const addTodo = vi.fn();
-
-    renderWithTodos(<TodoForm />, { addTodo });
-
-    const input = screen.getByLabelText(/todo title/i);
-    fireEvent.change(input, { target: { value: '   ' } });
-    fireEvent.click(screen.getByRole('button', { name: /add todo/i }));
-
-    expect(addTodo).not.toHaveBeenCalled();
-    expect(input).toHaveValue('   ');
-  });
-});
-
 describe('TodoList', () => {
   it('renders todos from context', () => {
     renderWithTodos(<TodoList />, {
@@ -228,6 +198,103 @@ describe('TodoList', () => {
     fireEvent.click(screen.getByRole('button', { name: /delete selected \(1\)/i }));
 
     expect(bulkDeleteTodos).toHaveBeenCalledWith(['1']);
+  });
+
+  it('shows inline add form as first list item when Add todo clicked', () => {
+    const addTodo = vi.fn().mockResolvedValue({ id: '3', title: 'New todo', completed: false });
+
+    renderWithTodos(<TodoList />, {
+      todos: [
+        { id: '1', title: 'Write tests', completed: false },
+      ],
+      addTodo,
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: /add todo/i }));
+
+    const input = screen.getByRole('textbox', { name: /todo title/i });
+    expect(input).toBeInTheDocument();
+
+    const listItems = screen.getByRole('list', { name: /todos/i }).children;
+    expect(listItems[0].querySelector('input')).toBeTruthy();
+  });
+
+  it('submits todo and exits add mode on Enter', async () => {
+    const addTodo = vi.fn().mockResolvedValue({ id: '3', title: 'New todo', completed: false });
+
+    renderWithTodos(<TodoList />, {
+      todos: [],
+      addTodo,
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: /add todo/i }));
+
+    const input = screen.getByRole('textbox', { name: /todo title/i });
+    fireEvent.change(input, { target: { value: 'New todo' } });
+    fireEvent.keyDown(input, { key: 'Enter' });
+
+    await waitFor(() => {
+      expect(addTodo).toHaveBeenCalledWith('New todo');
+    });
+    expect(screen.queryByRole('textbox', { name: /todo title/i })).not.toBeInTheDocument();
+  });
+
+  it('exits add mode on Escape without submitting', () => {
+    const addTodo = vi.fn();
+
+    renderWithTodos(<TodoList />, {
+      todos: [],
+      addTodo,
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: /add todo/i }));
+    expect(screen.getByRole('textbox', { name: /todo title/i })).toBeInTheDocument();
+
+    const input = screen.getByRole('textbox', { name: /todo title/i });
+    fireEvent.keyDown(input, { key: 'Escape' });
+
+    expect(addTodo).not.toHaveBeenCalled();
+    expect(screen.queryByRole('textbox', { name: /todo title/i })).not.toBeInTheDocument();
+  });
+});
+
+describe('InlineAddForm', () => {
+  it('submits todo on Enter key', async () => {
+    const onSubmit = vi.fn();
+    const onCancel = vi.fn();
+
+    render(<InlineAddForm onSubmit={onSubmit} onCancel={onCancel} />);
+
+    const input = screen.getByRole('textbox', { name: /todo title/i });
+    fireEvent.change(input, { target: { value: 'New todo' } });
+    fireEvent.keyDown(input, { key: 'Enter' });
+
+    expect(onSubmit).toHaveBeenCalledWith('New todo');
+  });
+
+  it('cancels on Escape key', () => {
+    const onSubmit = vi.fn();
+    const onCancel = vi.fn();
+
+    render(<InlineAddForm onSubmit={onSubmit} onCancel={onCancel} />);
+
+    const input = screen.getByRole('textbox', { name: /todo title/i });
+    fireEvent.keyDown(input, { key: 'Escape' });
+
+    expect(onCancel).toHaveBeenCalledTimes(1);
+    expect(onSubmit).not.toHaveBeenCalled();
+  });
+
+  it('blocks empty input submit', () => {
+    const onSubmit = vi.fn();
+    const onCancel = vi.fn();
+
+    render(<InlineAddForm onSubmit={onSubmit} onCancel={onCancel} />);
+
+    const input = screen.getByRole('textbox', { name: /todo title/i });
+    fireEvent.keyDown(input, { key: 'Enter' });
+
+    expect(onSubmit).not.toHaveBeenCalled();
   });
 });
 
