@@ -1,3 +1,4 @@
+using BackendApi.Application;
 using BackendApi.Application.Ports;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,6 +15,7 @@ public static class DependencyInjection
 
         services.AddSingleton<NpgsqlDataSource>(NpgsqlDataSource.Create(connectionString));
         services.AddTransient<ITodoRepository, PostgresTodoRepository>();
+        services.AddTransient<ILogStore, PostgresLogStore>();
         services.AddHostedService<MigrationRunner>();
 
         return services;
