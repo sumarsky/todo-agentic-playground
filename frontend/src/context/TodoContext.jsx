@@ -14,6 +14,12 @@ export const TodoContextProvider = ({ children, initialTodos = [] }) => {
     todosRef.current = todos;
   }, [todos]);
 
+  useEffect(() => {
+    if (initialTodos.length === 0) {
+      listTodos();
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
   const runTodoRequest = async (request, nextTodos) => {
     setLoading(true);
     setError(null);

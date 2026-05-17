@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { render, screen, waitFor } from '@testing-library/react';
 import { useContext } from 'react';
 import { TodoContextProvider } from './TodoContext';
 import { TodoContext } from './TodoContextValue';
@@ -16,14 +16,25 @@ const TestConsumer = () => {
 };
 
 describe('TodoContextProvider', () => {
-  it('provides default context state to children', () => {
+  beforeEach(() => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ json: async () => [] }));
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.restoreAllMocks();
+  });
+
+  it('provides default context state to children', async () => {
     render(
       <TodoContextProvider>
         <TestConsumer />
       </TodoContextProvider>
     );
-    
-    expect(screen.getByTestId('todos-count')).toHaveTextContent('0');
+
+    await waitFor(() => {
+      expect(screen.getByTestId('todos-count')).toHaveTextContent('0');
+    });
     expect(screen.getByTestId('loading')).toHaveTextContent('false');
     expect(screen.getByTestId('error')).toHaveTextContent('none');
   });

@@ -1,6 +1,6 @@
 ## 01 - Load todos on mount
 
-**Status:** ready-for-agent
+**Status:** done
 
 ### Description
 

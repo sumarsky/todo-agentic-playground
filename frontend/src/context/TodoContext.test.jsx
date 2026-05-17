@@ -4,6 +4,17 @@ import { useContext } from 'react';
 import { TodoContextProvider } from './TodoContext';
 import { TodoContext } from './TodoContextValue';
 
+const StateCapture = () => {
+  const ctx = useContext(TodoContext);
+  return (
+    <div>
+      <span data-testid="todos-count">{ctx.todos.length}</span>
+      <span data-testid="loading">{String(ctx.loading)}</span>
+      <span data-testid="error">{ctx.error || 'none'}</span>
+    </div>
+  );
+};
+
 describe('TodoContext', () => {
   it('has default state and action functions', () => {
     expect(TodoContext).toBeDefined();
@@ -30,6 +41,31 @@ describe('TodoContextProvider - Actions', () => {
     vi.restoreAllMocks();
   });
 
+  describe('load todos on mount', () => {
+    it('fetches todos from GET /todos when component mounts', async () => {
+      const mockTodos = [
+        { id: '1', title: 'Task 1' },
+        { id: '2', title: 'Task 2' },
+      ];
+
+      globalThis.fetch.mockResolvedValueOnce({
+        json: async () => mockTodos,
+      });
+
+      render(
+        <TodoContextProvider>
+          <StateCapture />
+        </TodoContextProvider>
+      );
+
+      await waitFor(() => {
+        expect(screen.getByTestId('todos-count')).toHaveTextContent('2');
+      });
+
+      expect(globalThis.fetch).toHaveBeenCalledWith('http://localhost:5000/todos');
+    });
+  });
+
   describe('listTodos()', () => {
     it('sets loading true while request is pending, then false after success', async () => {
       const mockTodos = [{ id: '1', title: 'Task 1' }];
@@ -52,7 +88,7 @@ describe('TodoContextProvider - Actions', () => {
       };
 
       render(
-        <TodoContextProvider>
+        <TodoContextProvider initialTodos={[{ id: 'stub' }]}>
           <StateCapture />
         </TodoContextProvider>
       );
@@ -98,7 +134,7 @@ describe('TodoContextProvider - Actions', () => {
       };
 
       render(
-        <TodoContextProvider>
+        <TodoContextProvider initialTodos={[{ id: 'stub' }]}>
           <StateCapture />
         </TodoContextProvider>
       );
@@ -130,7 +166,7 @@ describe('TodoContextProvider - Actions', () => {
       };
 
       render(
-        <TodoContextProvider>
+        <TodoContextProvider initialTodos={[{ id: 'stub' }]}>
           <StateCapture />
         </TodoContextProvider>
       );
@@ -206,7 +242,7 @@ describe('TodoContextProvider - Actions', () => {
       };
 
       render(
-        <TodoContextProvider>
+        <TodoContextProvider initialTodos={[{ id: 'stub' }]}>
           <StateCapture />
         </TodoContextProvider>
       );
