@@ -533,7 +533,8 @@ describe('TodoItem', () => {
     expect(span).toHaveStyle({
       opacity: '0.6',
       textDecoration: 'line-through',
-      backgroundColor: '#f5f5f5',
+      color: '#8a9478',
+      backgroundColor: '#e8f0dc',
     });
   });
 
@@ -546,7 +547,8 @@ describe('TodoItem', () => {
     expect(span).not.toHaveStyle({
       opacity: '0.6',
       textDecoration: 'line-through',
-      backgroundColor: '#f5f5f5',
+      color: '#8a9478',
+      backgroundColor: '#e8f0dc',
     });
   });
 
