@@ -6,24 +6,22 @@ import { TodoItem } from './TodoItem';
 import { Toolbar } from './Toolbar';
 
 export const TodoList = () => {
-  const { todos, addTodo } = useContext(TodoContext);
-  const [selectedIds, setSelectedIds] = useState([]);
+  const { todos, addTodo, selectedIds, selectAll, deselectAll, selectTodo, deselectTodo } = useContext(TodoContext);
   const [isAdding, setIsAdding] = useState(false);
 
   const handleSelectionChange = (todoId, selected) => {
-    setSelectedIds((current) => {
-      if (selected) {
-        return current.includes(todoId) ? current : [...current, todoId];
-      }
-      return current.filter((id) => id !== todoId);
-    });
+    if (selected) {
+      selectTodo(todoId);
+    } else {
+      deselectTodo(todoId);
+    }
   };
 
   const handleSelectAll = () => {
     if (selectedIds.length === todos.length) {
-      setSelectedIds([]);
+      deselectAll();
     } else {
-      setSelectedIds(todos.map((todo) => todo.id));
+      selectAll();
     }
   };
 
@@ -41,11 +39,12 @@ export const TodoList = () => {
   };
 
   const isAllSelected = todos.length > 0 && selectedIds.length === todos.length;
+  const isIndeterminate = selectedIds.length > 0 && selectedIds.length < todos.length;
 
   if (todos.length === 0 && !isAdding) {
     return (
       <>
-        <Toolbar onAddClick={handleAddClick} onSelectAll={handleSelectAll} isAllSelected={isAllSelected} />
+        <Toolbar onAddClick={handleAddClick} onSelectAll={handleSelectAll} isAllSelected={isAllSelected} isIndeterminate={isIndeterminate} />
         <p>No todos yet</p>
       </>
     );
@@ -53,7 +52,7 @@ export const TodoList = () => {
 
   return (
     <>
-      <Toolbar onAddClick={handleAddClick} onSelectAll={handleSelectAll} isAllSelected={isAllSelected} />
+      <Toolbar onAddClick={handleAddClick} onSelectAll={handleSelectAll} isAllSelected={isAllSelected} isIndeterminate={isIndeterminate} />
       <BulkDeleteButton selectedIds={selectedIds} />
       <ul aria-label="Todos">
         {isAdding && (

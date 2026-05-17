@@ -11,6 +11,8 @@ const StateCapture = () => {
       <span data-testid="todos-count">{ctx.todos.length}</span>
       <span data-testid="loading">{String(ctx.loading)}</span>
       <span data-testid="error">{ctx.error || 'none'}</span>
+      <span data-testid="selected-count">{ctx.selectedIds?.length || 0}</span>
+      <span data-testid="selected-ids">{(ctx.selectedIds || []).join(',')}</span>
     </div>
   );
 };
@@ -402,6 +404,79 @@ describe('TodoContextProvider - Actions', () => {
       });
       expect(result).toEqual([{ id: '2', title: 'Task 2' }]);
       expect(screen.getByTestId('error')).toHaveTextContent('none');
+    });
+  });
+
+  describe('selectAll()', () => {
+    it('selects all visible todo ids', async () => {
+      const todos = [
+        { id: '1', title: 'Task 1' },
+        { id: '2', title: 'Task 2' },
+        { id: '3', title: 'Task 3' },
+      ];
+
+      let capturedActions;
+      const StateCapture = () => {
+        const ctx = useContext(TodoContext);
+        capturedActions = ctx;
+        return (
+          <div>
+            <span data-testid="selected-count">{ctx.selectedIds?.length || 0}</span>
+            <span data-testid="selected-ids">{(ctx.selectedIds || []).join(',')}</span>
+          </div>
+        );
+      };
+
+      render(
+        <TodoContextProvider initialTodos={todos}>
+          <StateCapture />
+        </TodoContextProvider>
+      );
+
+      expect(screen.getByTestId('selected-count')).toHaveTextContent('0');
+
+      capturedActions.selectAll();
+
+      await waitFor(() => {
+        expect(screen.getByTestId('selected-count')).toHaveTextContent('3');
+        expect(screen.getByTestId('selected-ids')).toHaveTextContent('1,2,3');
+      });
+    });
+  });
+
+  describe('deselectAll()', () => {
+    it('clears all selected ids', async () => {
+      const todos = [
+        { id: '1', title: 'Task 1' },
+        { id: '2', title: 'Task 2' },
+      ];
+
+      let capturedActions;
+      const StateCapture = () => {
+        const ctx = useContext(TodoContext);
+        capturedActions = ctx;
+        return (
+          <div>
+            <span data-testid="selected-ids">{(ctx.selectedIds || []).join(',')}</span>
+          </div>
+        );
+      };
+
+      render(
+        <TodoContextProvider initialTodos={todos}>
+          <StateCapture />
+        </TodoContextProvider>
+      );
+
+      capturedActions.selectAll();
+      await waitFor(() => {
+        expect(screen.getByTestId('selected-ids')).toHaveTextContent('1,2');
+      });
+
+      capturedActions.deselectAll();
+      await waitFor(() => {
+        expect(screen.getByTestId('selected-ids')).toHaveTextContent('');
+      });
     });
   });
 });

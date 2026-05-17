@@ -5,6 +5,7 @@ export const TodoContext = createContext({
   loading: false,
   error: null,
   filters: { completed: false, search: '' },
+  selectedIds: [],
   listTodos: async () => [],
   setCompletedFilter: () => {},
   setSearchFilter: () => {},
@@ -12,4 +13,8 @@ export const TodoContext = createContext({
   updateTodo: async () => [],
   deleteTodo: async () => [],
   bulkDeleteTodos: async () => [],
+  selectAll: () => {},
+  deselectAll: () => {},
+  selectTodo: () => {},
+  deselectTodo: () => {},
 });

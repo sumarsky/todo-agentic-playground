@@ -1,9 +1,16 @@
-import { useContext } from 'react';
+import { useContext, useEffect, useRef } from 'react';
 import { Search, Plus, Filter } from 'lucide-react';
 import { TodoContext } from '../context/TodoContextValue';
 
-export const Toolbar = ({ onAddClick, onSelectAll, isAllSelected }) => {
+export const Toolbar = ({ onAddClick, onSelectAll, isAllSelected, isIndeterminate }) => {
   const { filters, setSearchFilter, setCompletedFilter, listTodos } = useContext(TodoContext);
+  const checkboxRef = useRef(null);
+
+  useEffect(() => {
+    if (checkboxRef.current) {
+      checkboxRef.current.indeterminate = isIndeterminate;
+    }
+  }, [isIndeterminate]);
 
   const handleSearchChange = (event) => {
     const search = event.target.value;
@@ -39,6 +46,7 @@ export const Toolbar = ({ onAddClick, onSelectAll, isAllSelected }) => {
         <span className="sr-only">Filter completed</span>
       </button>
       <input
+        ref={checkboxRef}
         type="checkbox"
         checked={isAllSelected}
         onChange={onSelectAll}

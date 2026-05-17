@@ -8,6 +8,7 @@ export const TodoContextProvider = ({ children, initialTodos = [] }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [filters, setFilters] = useState({ completed: false, search: '' });
+  const [selectedIds, setSelectedIds] = useState([]);
   const todosRef = useRef(todos);
 
   useEffect(() => {
@@ -114,11 +115,28 @@ export const TodoContextProvider = ({ children, initialTodos = [] }) => {
       });
     }, (_, current) => current.filter((todo) => !ids.includes(todo.id)));
 
+  const selectAll = () => {
+    setSelectedIds(todos.map((todo) => todo.id));
+  };
+
+  const deselectAll = () => {
+    setSelectedIds([]);
+  };
+
+  const selectTodo = (id) => {
+    setSelectedIds((current) => current.includes(id) ? current : [...current, id]);
+  };
+
+  const deselectTodo = (id) => {
+    setSelectedIds((current) => current.filter((todoId) => todoId !== id));
+  };
+
   const value = {
     todos,
     loading,
     error,
     filters,
+    selectedIds,
     listTodos,
     setCompletedFilter,
     setSearchFilter,
@@ -126,6 +144,10 @@ export const TodoContextProvider = ({ children, initialTodos = [] }) => {
     updateTodo,
     deleteTodo,
     bulkDeleteTodos,
+    selectAll,
+    deselectAll,
+    selectTodo,
+    deselectTodo,
   };
 
   return (

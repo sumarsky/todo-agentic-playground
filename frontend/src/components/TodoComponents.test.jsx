@@ -1,6 +1,8 @@
 import { describe, it, expect, vi } from 'vitest';
+import { useState } from 'react';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { TodoContext } from '../context/TodoContextValue';
+import { TodoContextProvider } from '../context/TodoContext';
 import { BulkDeleteButton } from './BulkDeleteButton';
 import { FilterBar } from './FilterBar';
 import { InlineAddForm } from './InlineAddForm';
@@ -21,6 +23,11 @@ const renderWithTodos = (ui, contextOverrides = {}) => {
     filters: { completed: false, search: '' },
     setCompletedFilter: vi.fn(),
     setSearchFilter: vi.fn(),
+    selectedIds: [],
+    selectAll: vi.fn(),
+    deselectAll: vi.fn(),
+    selectTodo: vi.fn(),
+    deselectTodo: vi.fn(),
     ...contextOverrides,
   };
 
@@ -112,6 +119,35 @@ describe('Toolbar', () => {
 
     expect(onSelectAll).toHaveBeenCalledTimes(1);
   });
+
+  it('select-all checkbox shows indeterminate state when some todos selected', () => {
+    renderWithTodos(
+      <Toolbar onAddClick={vi.fn()} onSelectAll={vi.fn()} isAllSelected={false} isIndeterminate={true} />
+    );
+
+    const checkbox = screen.getByRole('checkbox', { name: /select all/i });
+    expect(checkbox).toHaveProperty('indeterminate', true);
+  });
+
+  it('select-all checkbox is not indeterminate when all selected', () => {
+    renderWithTodos(
+      <Toolbar onAddClick={vi.fn()} onSelectAll={vi.fn()} isAllSelected={true} isIndeterminate={false} />
+    );
+
+    const checkbox = screen.getByRole('checkbox', { name: /select all/i });
+    expect(checkbox).toHaveProperty('indeterminate', false);
+    expect(checkbox).toBeChecked();
+  });
+
+  it('select-all checkbox is not indeterminate when none selected', () => {
+    renderWithTodos(
+      <Toolbar onAddClick={vi.fn()} onSelectAll={vi.fn()} isAllSelected={false} isIndeterminate={false} />
+    );
+
+    const checkbox = screen.getByRole('checkbox', { name: /select all/i });
+    expect(checkbox).toHaveProperty('indeterminate', false);
+    expect(checkbox).not.toBeChecked();
+  });
 });
 
 describe('FilterBar', () => {
@@ -186,18 +222,102 @@ describe('TodoList', () => {
   it('selects todos and bulk deletes selected ids', () => {
     const bulkDeleteTodos = vi.fn();
 
-    renderWithTodos(<TodoList />, {
-      todos: [
-        { id: '1', title: 'Write tests', completed: false },
-        { id: '2', title: 'Ship UI', completed: true },
-      ],
-      bulkDeleteTodos,
-    });
+    const SelectableTodoList = () => {
+      const [selectedIds, setSelectedIds] = useState([]);
+
+      const ctx = {
+        todos: [
+          { id: '1', title: 'Write tests', completed: false },
+          { id: '2', title: 'Ship UI', completed: true },
+        ],
+        loading: false,
+        error: null,
+        filters: { completed: false, search: '' },
+        selectedIds,
+        listTodos: vi.fn(),
+        addTodo: vi.fn(),
+        updateTodo: vi.fn(),
+        deleteTodo: vi.fn(),
+        bulkDeleteTodos,
+        selectAll: vi.fn(),
+        deselectAll: vi.fn(),
+        selectTodo: (id) => { setSelectedIds((current) => [...current, id]); },
+        deselectTodo: (id) => { setSelectedIds((current) => current.filter((todoId) => todoId !== id)); },
+        setCompletedFilter: vi.fn(),
+        setSearchFilter: vi.fn(),
+      };
+
+      return (
+        <TodoContext.Provider value={ctx}>
+          <TodoList />
+        </TodoContext.Provider>
+      );
+    };
+
+    render(<SelectableTodoList />);
 
     fireEvent.click(screen.getByRole('checkbox', { name: /select write tests/i }));
     fireEvent.click(screen.getByRole('button', { name: /delete selected \(1\)/i }));
 
     expect(bulkDeleteTodos).toHaveBeenCalledWith(['1']);
+  });
+
+  it('select-all checkbox selects all visible todos via context', () => {
+    const selectAll = vi.fn();
+    const deselectAll = vi.fn();
+
+    renderWithTodos(<TodoList />, {
+      todos: [
+        { id: '1', title: 'Write tests', completed: false },
+        { id: '2', title: 'Ship UI', completed: true },
+      ],
+      selectedIds: [],
+      selectAll,
+      deselectAll,
+    });
+
+    const selectAllCheckbox = screen.getByRole('checkbox', { name: /select all/i });
+    fireEvent.click(selectAllCheckbox);
+
+    expect(selectAll).toHaveBeenCalledTimes(1);
+  });
+
+  it('select-all checkbox deselects all when all are selected', () => {
+    const selectAll = vi.fn();
+    const deselectAll = vi.fn();
+
+    renderWithTodos(<TodoList />, {
+      todos: [
+        { id: '1', title: 'Write tests', completed: false },
+        { id: '2', title: 'Ship UI', completed: true },
+      ],
+      selectedIds: ['1', '2'],
+      selectAll,
+      deselectAll,
+    });
+
+    const selectAllCheckbox = screen.getByRole('checkbox', { name: /select all/i });
+    expect(selectAllCheckbox).toBeChecked();
+
+    fireEvent.click(selectAllCheckbox);
+
+    expect(deselectAll).toHaveBeenCalledTimes(1);
+  });
+
+  it('select-all checkbox shows indeterminate when some todos selected', () => {
+    renderWithTodos(<TodoList />, {
+      todos: [
+        { id: '1', title: 'Write tests', completed: false },
+        { id: '2', title: 'Ship UI', completed: true },
+        { id: '3', title: 'Docs', completed: false },
+      ],
+      selectedIds: ['1'],
+      selectAll: vi.fn(),
+      deselectAll: vi.fn(),
+    });
+
+    const selectAllCheckbox = screen.getByRole('checkbox', { name: /select all/i });
+    expect(selectAllCheckbox).toHaveProperty('indeterminate', true);
   });
 
   it('shows inline add form as first list item when Add todo clicked', () => {

@@ -1,6 +1,6 @@
 ## 05 - Select all / deselect all
 
-**Status:** ready-for-agent
+**Status:** done
 
 ### Description
 
