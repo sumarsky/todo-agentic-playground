@@ -1,4 +1,5 @@
 import { useContext } from 'react';
+import { Filter } from 'lucide-react';
 import { TodoContext } from '../context/TodoContextValue';
 
 export const FilterBar = () => {
@@ -30,9 +31,11 @@ export const FilterBar = () => {
       <button
         type="button"
         aria-pressed={filters.completed}
+        title="Toggle completed"
         onClick={handleCompletedClick}
       >
-        Show completed todos
+        <Filter size={18} />
+        <span className="sr-only">Show completed todos</span>
       </button>
     </div>
   );

@@ -1,6 +1,6 @@
 ## 06 - Add lucide-react icons with tooltips
 
-**Status:** ready-for-agent
+**Status:** done
 
 ### Description
 

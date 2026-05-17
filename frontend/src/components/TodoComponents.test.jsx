@@ -108,6 +108,24 @@ describe('Toolbar', () => {
     expect(onAddClick).toHaveBeenCalledTimes(1);
   });
 
+  it('add button has tooltip title attribute', () => {
+    renderWithTodos(
+      <Toolbar onAddClick={vi.fn()} onSelectAll={vi.fn()} isAllSelected={false} />
+    );
+
+    const addButton = screen.getByRole('button', { name: /add todo/i });
+    expect(addButton).toHaveAttribute('title', 'Add');
+  });
+
+  it('filter button has tooltip title attribute', () => {
+    renderWithTodos(
+      <Toolbar onAddClick={vi.fn()} onSelectAll={vi.fn()} isAllSelected={false} />
+    );
+
+    const filterButton = screen.getByRole('button', { name: /filter completed/i });
+    expect(filterButton).toHaveAttribute('title', 'Toggle completed');
+  });
+
   it('calls onSelectAll when select-all checkbox is clicked', () => {
     const onSelectAll = vi.fn();
 
@@ -167,6 +185,15 @@ describe('FilterBar', () => {
     expect(listTodos).toHaveBeenCalledWith({ completed: true, search: '' });
   });
 
+  it('has tooltip title attribute on filter button', () => {
+    renderWithTodos(<FilterBar />, {
+      filters: { completed: false, search: '' },
+    });
+
+    const button = screen.getByRole('button', { name: /show completed todos/i });
+    expect(button).toHaveAttribute('title', 'Toggle completed');
+  });
+
   it('updates search filter and refetches todos', () => {
     const setSearchFilter = vi.fn();
     const listTodos = vi.fn();
@@ -197,6 +224,13 @@ describe('BulkDeleteButton', () => {
     fireEvent.click(screen.getByRole('button', { name: /delete selected \(2\)/i }));
 
     expect(bulkDeleteTodos).toHaveBeenCalledWith(['1', '3']);
+  });
+
+  it('has tooltip title attribute', () => {
+    renderWithTodos(<BulkDeleteButton selectedIds={['1', '3']} />);
+
+    const button = screen.getByRole('button', { name: /delete selected \(2\)/i });
+    expect(button).toHaveAttribute('title', 'Delete selected');
   });
 });
 
@@ -427,6 +461,35 @@ describe('TodoItem', () => {
     expect(screen.getByText('Review PR')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /delete review pr/i })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /edit review pr/i })).toBeInTheDocument();
+  });
+
+  it('delete button has tooltip title attribute', () => {
+    renderWithTodos(
+      <TodoItem todo={{ id: '1', title: 'Review PR', completed: false }} />
+    );
+
+    const deleteButton = screen.getByRole('button', { name: /delete review pr/i });
+    expect(deleteButton).toHaveAttribute('title', 'Delete');
+  });
+
+  it('edit button has tooltip title attribute', () => {
+    renderWithTodos(
+      <TodoItem todo={{ id: '1', title: 'Review PR', completed: false }} />
+    );
+
+    const editButton = screen.getByRole('button', { name: /edit review pr/i });
+    expect(editButton).toHaveAttribute('title', 'Edit');
+  });
+
+  it('save button in edit mode has tooltip title attribute', () => {
+    renderWithTodos(
+      <TodoItem todo={{ id: '1', title: 'Review PR', completed: false }} />
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: /edit review pr/i }));
+
+    const saveButton = screen.getByRole('button', { name: /save todo/i });
+    expect(saveButton).toHaveAttribute('title', 'Save');
   });
 
   it('toggles completion when todo text is clicked', () => {

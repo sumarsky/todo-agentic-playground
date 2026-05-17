@@ -37,11 +37,11 @@ export const Toolbar = ({ onAddClick, onSelectAll, isAllSelected, isIndeterminat
         value={filters.search}
         onChange={handleSearchChange}
       />
-      <button type="button" onClick={onAddClick}>
+      <button type="button" onClick={onAddClick} title="Add">
         <Plus size={18} />
         <span className="sr-only">Add todo</span>
       </button>
-      <button type="button" aria-pressed={filters.completed} onClick={handleFilterClick}>
+      <button type="button" aria-pressed={filters.completed} onClick={handleFilterClick} title="Toggle completed">
         <Filter size={18} />
         <span className="sr-only">Filter completed</span>
       </button>

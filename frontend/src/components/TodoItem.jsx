@@ -1,4 +1,5 @@
 import { useContext, useState } from 'react';
+import { Trash2, Pencil, Check } from 'lucide-react';
 import { TodoContext } from '../context/TodoContextValue';
 
 export const TodoItem = ({ todo, selected = false, onSelectionChange }) => {
@@ -37,8 +38,9 @@ export const TodoItem = ({ todo, selected = false, onSelectionChange }) => {
           value={editedTitle}
           onChange={(event) => setEditedTitle(event.target.value)}
         />
-        <button type="button" onClick={handleSave}>
-          Save todo
+        <button type="button" onClick={handleSave} title="Save">
+          <Check size={18} />
+          <span className="sr-only">Save todo</span>
         </button>
       </div>
     );
@@ -67,16 +69,18 @@ export const TodoItem = ({ todo, selected = false, onSelectionChange }) => {
       <button
         type="button"
         aria-label={`Delete ${todo.title}`}
+        title="Delete"
         onClick={() => deleteTodo(todo.id)}
       >
-        Delete
+        <Trash2 size={18} />
       </button>
       <button
         type="button"
         aria-label={`Edit ${todo.title}`}
+        title="Edit"
         onClick={() => setIsEditing(true)}
       >
-        Edit
+        <Pencil size={18} />
       </button>
     </div>
   );
