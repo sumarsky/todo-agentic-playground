@@ -1,6 +1,6 @@
 ## 02 - Replace FilterBar with unified Toolbar
 
-**Status:** ready-for-agent
+**Status:** done
 
 ### Description
 

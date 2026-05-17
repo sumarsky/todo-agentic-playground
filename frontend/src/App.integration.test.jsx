@@ -112,17 +112,29 @@ describe('Todo app integration', () => {
   it('supports add, list, filter, update, delete, and bulk delete through backend-shaped requests', async () => {
     render(<App />);
 
-    const titleInput = screen.getByLabelText(/todo title/i);
+    // Add first todo
+    fireEvent.click(screen.getByRole('button', { name: /add todo/i }));
+    let titleInput = await screen.findByLabelText(/todo title/i);
     fireEvent.change(titleInput, { target: { value: 'Write tests' } });
-    fireEvent.click(screen.getByRole('button', { name: /add todo/i }));
-    fireEvent.change(titleInput, { target: { value: 'Ship UI' } });
-    fireEvent.click(screen.getByRole('button', { name: /add todo/i }));
-    fireEvent.change(titleInput, { target: { value: 'Fix docs' } });
-    fireEvent.click(screen.getByRole('button', { name: /add todo/i }));
+    fireEvent.submit(screen.getByRole('form', { name: /add todo/i }));
 
     expect(await screen.findByText('Write tests')).toBeInTheDocument();
-    expect(screen.getByText('Ship UI')).toBeInTheDocument();
-    expect(screen.getByText('Fix docs')).toBeInTheDocument();
+
+    // Add second todo
+    fireEvent.click(screen.getByRole('button', { name: /add todo/i }));
+    titleInput = await screen.findByLabelText(/todo title/i);
+    fireEvent.change(titleInput, { target: { value: 'Ship UI' } });
+    fireEvent.submit(screen.getByRole('form', { name: /add todo/i }));
+
+    expect(await screen.findByText('Ship UI')).toBeInTheDocument();
+
+    // Add third todo
+    fireEvent.click(screen.getByRole('button', { name: /add todo/i }));
+    titleInput = await screen.findByLabelText(/todo title/i);
+    fireEvent.change(titleInput, { target: { value: 'Fix docs' } });
+    fireEvent.submit(screen.getByRole('form', { name: /add todo/i }));
+
+    expect(await screen.findByText('Fix docs')).toBeInTheDocument();
 
     fireEvent.change(screen.getByLabelText(/search todos/i), {
       target: { value: 'Write' },
@@ -148,14 +160,14 @@ describe('Todo app integration', () => {
     expect(await screen.findByText('Write integration tests')).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('checkbox', { name: /mark write integration tests complete/i }));
-    fireEvent.click(screen.getByRole('button', { name: /show completed todos/i }));
+    fireEvent.click(screen.getByRole('button', { name: /filter completed/i }));
 
     await waitFor(() => {
       expect(screen.getByText('Write integration tests')).toBeInTheDocument();
       expect(screen.queryByText('Ship UI')).not.toBeInTheDocument();
     });
 
-    fireEvent.click(screen.getByRole('button', { name: /show completed todos/i }));
+    fireEvent.click(screen.getByRole('button', { name: /filter completed/i }));
     await screen.findByText('Ship UI');
 
     fireEvent.click(screen.getByRole('button', { name: /delete ship ui/i }));

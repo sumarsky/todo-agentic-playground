@@ -6,6 +6,7 @@ import { FilterBar } from './FilterBar';
 import { TodoForm } from './TodoForm';
 import { TodoItem } from './TodoItem';
 import { TodoList } from './TodoList';
+import { Toolbar } from './Toolbar';
 
 const renderWithTodos = (ui, contextOverrides = {}) => {
   const value = {
@@ -32,6 +33,86 @@ const renderWithTodos = (ui, contextOverrides = {}) => {
     value,
   };
 };
+
+describe('Toolbar', () => {
+  it('renders search input, add button, filter toggle, and select-all checkbox', () => {
+    const onAddClick = vi.fn();
+    const onSelectAll = vi.fn();
+
+    renderWithTodos(
+      <Toolbar onAddClick={onAddClick} onSelectAll={onSelectAll} isAllSelected={false} />
+    );
+
+    expect(screen.getByRole('textbox', { name: /search todos/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /add todo/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /filter completed/i })).toBeInTheDocument();
+    expect(screen.getByRole('checkbox', { name: /select all/i })).toBeInTheDocument();
+  });
+
+  it('calls setSearchFilter and listTodos when search input changes', () => {
+    const setSearchFilter = vi.fn();
+    const listTodos = vi.fn();
+
+    renderWithTodos(
+      <Toolbar onAddClick={vi.fn()} onSelectAll={vi.fn()} isAllSelected={false} />,
+      {
+        filters: { completed: false, search: '' },
+        setSearchFilter,
+        listTodos,
+      }
+    );
+
+    fireEvent.change(screen.getByRole('textbox', { name: /search todos/i }), {
+      target: { value: 'docs' },
+    });
+
+    expect(setSearchFilter).toHaveBeenCalledWith('docs');
+    expect(listTodos).toHaveBeenCalledWith({ completed: false, search: 'docs' });
+  });
+
+  it('toggles completed filter and refetches todos', () => {
+    const setCompletedFilter = vi.fn();
+    const listTodos = vi.fn();
+
+    renderWithTodos(
+      <Toolbar onAddClick={vi.fn()} onSelectAll={vi.fn()} isAllSelected={false} />,
+      {
+        filters: { completed: false, search: '' },
+        setCompletedFilter,
+        listTodos,
+      }
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: /filter completed/i }));
+
+    expect(setCompletedFilter).toHaveBeenCalledWith(true);
+    expect(listTodos).toHaveBeenCalledWith({ completed: true, search: '' });
+  });
+
+  it('calls onAddClick when add button is clicked', () => {
+    const onAddClick = vi.fn();
+
+    renderWithTodos(
+      <Toolbar onAddClick={onAddClick} onSelectAll={vi.fn()} isAllSelected={false} />
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: /add todo/i }));
+
+    expect(onAddClick).toHaveBeenCalledTimes(1);
+  });
+
+  it('calls onSelectAll when select-all checkbox is clicked', () => {
+    const onSelectAll = vi.fn();
+
+    renderWithTodos(
+      <Toolbar onAddClick={vi.fn()} onSelectAll={onSelectAll} isAllSelected={false} />
+    );
+
+    fireEvent.click(screen.getByRole('checkbox', { name: /select all/i }));
+
+    expect(onSelectAll).toHaveBeenCalledTimes(1);
+  });
+});
 
 describe('FilterBar', () => {
   it('updates completed filter and refetches todos', () => {
