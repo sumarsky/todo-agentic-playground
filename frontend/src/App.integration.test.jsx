@@ -159,7 +159,7 @@ describe('Todo app integration', () => {
 
     expect(await screen.findByText('Write integration tests')).toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole('checkbox', { name: /mark write integration tests complete/i }));
+    fireEvent.click(screen.getByText('Write integration tests'));
     fireEvent.click(screen.getByRole('button', { name: /filter completed/i }));
 
     await waitFor(() => {

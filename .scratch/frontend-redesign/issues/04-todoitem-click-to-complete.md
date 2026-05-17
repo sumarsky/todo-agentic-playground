@@ -1,6 +1,6 @@
 ## 04 - TodoItem: click to complete, gray out completed
 
-**Status:** ready-for-agent
+**Status:** done
 
 ### Description
 

@@ -299,17 +299,17 @@ describe('InlineAddForm', () => {
 });
 
 describe('TodoItem', () => {
-  it('renders title, completion checkbox, and delete button', () => {
+  it('renders title, delete button, and edit button', () => {
     renderWithTodos(
       <TodoItem todo={{ id: '1', title: 'Review PR', completed: false }} />
     );
 
     expect(screen.getByText('Review PR')).toBeInTheDocument();
-    expect(screen.getByRole('checkbox', { name: /mark review pr complete/i })).not.toBeChecked();
     expect(screen.getByRole('button', { name: /delete review pr/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /edit review pr/i })).toBeInTheDocument();
   });
 
-  it('updates the todo when completion checkbox is clicked', () => {
+  it('toggles completion when todo text is clicked', () => {
     const updateTodo = vi.fn();
 
     renderWithTodos(
@@ -317,11 +317,53 @@ describe('TodoItem', () => {
       { updateTodo }
     );
 
-    fireEvent.click(screen.getByRole('checkbox', { name: /mark review pr complete/i }));
+    fireEvent.click(screen.getByText('Review PR'));
 
     expect(updateTodo).toHaveBeenCalledWith('1', {
       title: 'Review PR',
       completed: true,
+    });
+  });
+
+  it('toggles completion back when completed todo text is clicked', () => {
+    const updateTodo = vi.fn();
+
+    renderWithTodos(
+      <TodoItem todo={{ id: '1', title: 'Review PR', completed: true }} />,
+      { updateTodo }
+    );
+
+    fireEvent.click(screen.getByText('Review PR'));
+
+    expect(updateTodo).toHaveBeenCalledWith('1', {
+      title: 'Review PR',
+      completed: false,
+    });
+  });
+
+  it('applies completed styling when todo is done', () => {
+    renderWithTodos(
+      <TodoItem todo={{ id: '1', title: 'Done task', completed: true }} />
+    );
+
+    const span = screen.getByText('Done task');
+    expect(span).toHaveStyle({
+      opacity: '0.6',
+      textDecoration: 'line-through',
+      backgroundColor: '#f5f5f5',
+    });
+  });
+
+  it('does not apply completed styling when todo is not done', () => {
+    renderWithTodos(
+      <TodoItem todo={{ id: '1', title: 'Active task', completed: false }} />
+    );
+
+    const span = screen.getByText('Active task');
+    expect(span).not.toHaveStyle({
+      opacity: '0.6',
+      textDecoration: 'line-through',
+      backgroundColor: '#f5f5f5',
     });
   });
 

@@ -54,15 +54,16 @@ export const TodoItem = ({ todo, selected = false, onSelectionChange }) => {
           onChange={(event) => onSelectionChange(todo.id, event.target.checked)}
         />
       ) : null}
-      <label>
-        <input
-          type="checkbox"
-          checked={todo.completed}
-          aria-label={`Mark ${todo.title} complete`}
-          onChange={handleToggle}
-        />
-        <span>{todo.title}</span>
-      </label>
+      <span
+        onClick={handleToggle}
+        style={todo.completed ? {
+          opacity: 0.6,
+          textDecoration: 'line-through',
+          backgroundColor: '#f5f5f5',
+        } : {}}
+      >
+        {todo.title}
+      </span>
       <button
         type="button"
         aria-label={`Delete ${todo.title}`}
