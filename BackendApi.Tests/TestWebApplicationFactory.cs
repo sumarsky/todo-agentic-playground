@@ -2,6 +2,7 @@ using BackendApi.Application.Ports;
 using BackendApi.Tests.TestDoubles;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace BackendApi.Tests;
@@ -10,6 +11,8 @@ public class TestWebApplicationFactory : WebApplicationFactory<Program>
 {
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
+        builder.UseSetting("ConnectionStrings:Default", "Host=localhost;Database=test;Username=test;Password=test");
+
         builder.ConfigureServices(services =>
         {
             var descriptor = services.SingleOrDefault(
@@ -20,6 +23,15 @@ public class TestWebApplicationFactory : WebApplicationFactory<Program>
             }
 
             services.AddSingleton<ITodoRepository, FakeTodoRepository>();
+
+            var logStoreDescriptor = services.SingleOrDefault(
+                d => d.ServiceType == typeof(ILogStore));
+            if (logStoreDescriptor != null)
+            {
+                services.Remove(logStoreDescriptor);
+            }
+
+            services.AddSingleton<ILogStore, FakeLogStore>();
 
             var migrationDescriptor = services.SingleOrDefault(
                 d => d.ServiceType == typeof(Microsoft.Extensions.Hosting.IHostedService)

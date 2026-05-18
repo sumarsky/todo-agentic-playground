@@ -34,6 +34,11 @@ public class FakeLogStore : ILogStore
                 entries = entries.Where(e => e.Message.Contains(filter.Message!, StringComparison.OrdinalIgnoreCase)).ToList();
             }
 
+            if (filter.Since.HasValue)
+            {
+                entries = entries.Where(e => e.Timestamp >= filter.Since.Value.UtcDateTime).ToList();
+            }
+
             entries = entries.OrderByDescending(e => e.Timestamp).ToList();
 
             return Task.FromResult<IReadOnlyList<LogEntry>>(entries.AsReadOnly());

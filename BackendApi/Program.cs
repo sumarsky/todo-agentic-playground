@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Diagnostics;
 using BackendApi.Application;
+using BackendApi.Application.Ports;
 using BackendApi.Application.UseCases;
 using BackendApi.Contracts;
 using BackendApi.Mappers;
@@ -141,5 +142,30 @@ app.MapDelete("/todos", async (HttpContext context, BulkDeleteTodoUseCase useCas
     await useCase.Execute(ids);
     return Results.NoContent();
 }).WithName("BulkDeleteTodos");
+
+app.MapGet("/api/dashboard/metrics", async (ILogStore logStore, string? window) =>
+{
+    var windowHours = window switch
+    {
+        "1h" => 1,
+        "7d" => 168,
+        "30d" => 720,
+        _ => 24
+    };
+
+    var filter = new LogFilter { Since = DateTimeOffset.UtcNow.AddHours(-windowHours) };
+    var entries = await logStore.QueryAsync(filter);
+
+    var metrics = entries
+        .GroupBy(e => $"{e.HttpMethod} {e.HttpPath}")
+        .Select(g => new EndpointMetric(
+            g.Key,
+            g.Count(e => e.HttpStatus >= 400),
+            g.Average(e => e.DurationMs ?? 0),
+            g.Count()))
+        .ToList();
+
+    return Results.Ok(metrics);
+}).WithName("GetDashboardMetrics");
 
 app.Run();

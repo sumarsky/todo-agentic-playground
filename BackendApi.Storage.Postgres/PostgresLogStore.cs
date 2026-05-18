@@ -46,6 +46,12 @@ public class PostgresLogStore : ILogStore
             parameters.Add("Message", $"%{filter.Message}%");
         }
 
+        if (filter.Since.HasValue)
+        {
+            sql += " AND timestamp >= @Since";
+            parameters.Add("Since", filter.Since.Value.UtcDateTime);
+        }
+
         sql += " ORDER BY timestamp DESC";
 
         var results = await conn.QueryAsync<LogEntry>(sql, parameters);
