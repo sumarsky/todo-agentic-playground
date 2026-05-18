@@ -8,8 +8,12 @@ namespace BackendApi.Tests;
 
 public class TestWebApplicationFactory : WebApplicationFactory<Program>
 {
+    public FakeLogStore FakeLogStore { get; } = new();
+
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
+        builder.UseSetting("ConnectionStrings:Default", "Host=localhost;Database=test;Username=test;Password=test");
+
         builder.ConfigureServices(services =>
         {
             var descriptor = services.SingleOrDefault(
@@ -28,6 +32,15 @@ public class TestWebApplicationFactory : WebApplicationFactory<Program>
             {
                 services.Remove(migrationDescriptor);
             }
+
+            var logStoreDescriptor = services.SingleOrDefault(
+                d => d.ServiceType == typeof(ILogStore));
+            if (logStoreDescriptor != null)
+            {
+                services.Remove(logStoreDescriptor);
+            }
+
+            services.AddSingleton<ILogStore>(FakeLogStore);
         });
     }
 }

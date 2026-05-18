@@ -1,4 +1,4 @@
-Status: ready-for-agent
+Status: done
 
 ## Parent
 
@@ -29,13 +29,13 @@ Build the log ingestion pipeline that captures application activity and writes l
 
 ## Acceptance criteria
 
-- [ ] Middleware captures HTTP request data and writes log entries to `ILogStore`
-- [ ] Middleware maps status codes to correct log levels (200-399=info, 400-499=warning, 500-599=error)
-- [ ] Custom `ILoggerProvider` forwards logs to `ILogStore` alongside console output
-- [ ] Exception handler writes error log entries with exception type and message
-- [ ] Existing console logging behavior is unchanged
-- [ ] Integration tests verify log entry creation for success, client error, and server error scenarios
-- [ ] All existing tests still pass
+- [x] Middleware captures HTTP request data and writes log entries to `ILogStore`
+- [x] Middleware maps status codes to correct log levels (200-399=info, 400-499=warning, 500-599=error)
+- [x] Custom `ILoggerProvider` forwards logs to `ILogStore` alongside console output
+- [x] Exception handler writes error log entries with exception type and message
+- [x] Existing console logging behavior is unchanged
+- [x] Integration tests verify log entry creation for success, client error, and server error scenarios
+- [x] All existing tests still pass
 
 ## Blocked by
 

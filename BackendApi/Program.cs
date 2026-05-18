@@ -1,9 +1,12 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Diagnostics;
 using BackendApi.Application;
+using BackendApi.Application.Ports;
 using BackendApi.Application.UseCases;
 using BackendApi.Contracts;
+using BackendApi.Logging;
 using BackendApi.Mappers;
+using BackendApi.Middleware;
 using BackendApi.Observability;
 using BackendApi.Storage.Postgres;
 
@@ -12,6 +15,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.AddObservability();
 builder.Services.AddApplication();
 builder.Services.AddPostgresStorage(builder.Configuration);
+builder.Services.AddPostgresLogger();
 
 // Configure CORS
 builder.Services.AddCors(options =>
@@ -30,6 +34,9 @@ var app = builder.Build();
 // Use CORS middleware
 app.UseCors("AllowLocalhost3000");
 
+// Log ingestion middleware
+app.UseMiddleware<LogIngestionMiddleware>();
+
 // Global exception handler middleware
 app.UseExceptionHandler(errorApp =>
 {
@@ -37,13 +44,14 @@ app.UseExceptionHandler(errorApp =>
     {
         context.Response.StatusCode = StatusCodes.Status500InternalServerError;
         context.Response.ContentType = "application/json";
-        
+
         var exceptionHandlerPathFeature = context.Features.Get<IExceptionHandlerPathFeature>();
         var exception = exceptionHandlerPathFeature?.Error;
-        
+
         var logger = context.RequestServices.GetRequiredService<ILogger<Program>>();
+        var logStore = context.RequestServices.GetRequiredService<ILogStore>();
         var traceId = Activity.Current?.TraceId.ToString() ?? "unknown";
-        
+
         if (exception != null)
         {
             logger.LogError(exception,
@@ -51,10 +59,19 @@ app.UseExceptionHandler(errorApp =>
                 traceId,
                 exception.GetType().FullName,
                 exception.Message);
+
+            var entry = new BackendApi.Domain.LogEntry(Guid.NewGuid(), DateTime.UtcNow, "error", "exception-handler", exception.Message)
+            {
+                ExceptionType = exception.GetType().FullName,
+                ExceptionMessage = exception.Message,
+                TraceId = traceId
+            };
+
+            await logStore.WriteAsync(entry);
         }
-        
+
         var error = new { error = exception?.Message ?? "An unexpected error occurred" };
-        
+
         await context.Response.WriteAsJsonAsync(error);
     });
 });
