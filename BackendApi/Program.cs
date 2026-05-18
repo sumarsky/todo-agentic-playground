@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Diagnostics;
 using BackendApi.Application;
+using BackendApi.Application.Ports;
 using BackendApi.Application.UseCases;
 using BackendApi.Contracts;
 using BackendApi.Mappers;
@@ -141,5 +142,17 @@ app.MapDelete("/todos", async (HttpContext context, BulkDeleteTodoUseCase useCas
     await useCase.Execute(ids);
     return Results.NoContent();
 }).WithName("BulkDeleteTodos");
+
+// Logs Endpoints
+app.MapGet("/api/logs", async (ILogStore logStore, string? level, string? message) =>
+{
+    var filter = new LogFilter
+    {
+        Level = level,
+        Message = message
+    };
+    var entries = await logStore.QueryAsync(filter);
+    return Results.Ok(LogMapper.ToResponses(entries));
+}).WithName("GetLogs");
 
 app.Run();
