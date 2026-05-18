@@ -1,3 +1,4 @@
+using BackendApi.Tests;
 using System.Text.Json;
 using Xunit;
 using Xunit.Abstractions;
@@ -7,7 +8,7 @@ namespace BackendApi.Tests.Observability;
 public class ExceptionHandlerLoggingTests : IAsyncLifetime
 {
     private readonly ITestOutputHelper _output;
-    private WebApplicationFactory<Program> _factory = null!;
+    private TestWebApplicationFactory _factory = null!;
     private HttpClient _client = null!;
     private StringWriter _consoleOutput = null!;
     private TextWriter _originalConsoleOut = null!;
@@ -23,7 +24,7 @@ public class ExceptionHandlerLoggingTests : IAsyncLifetime
         _originalConsoleOut = Console.Out;
         Console.SetOut(_consoleOutput);
 
-        _factory = new WebApplicationFactory<Program>();
+        _factory = new TestWebApplicationFactory();
         _client = _factory.CreateClient();
         await Task.CompletedTask;
     }
