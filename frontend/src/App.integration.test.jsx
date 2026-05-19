@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 import App from './App';
 
 const API_BASE_URL = 'http://localhost:5000';
@@ -110,7 +111,11 @@ describe('Todo app integration', () => {
   });
 
   it('supports add, list, filter, update, delete, and bulk delete through backend-shaped requests', async () => {
-    render(<App />);
+    render(
+      <MemoryRouter initialEntries={['/']}>
+        <App />
+      </MemoryRouter>
+    );
 
     // Add first todo
     fireEvent.click(screen.getByRole('button', { name: /add todo/i }));

@@ -91,3 +91,66 @@
     grid-template-columns: 1fr;
   }
 }
+
+.dashboard-page {
+  width: min(960px, 100%);
+  margin: 0 auto;
+  padding: 32px 24px;
+  box-sizing: border-box;
+  text-align: left;
+}
+
+.dashboard-page h1 {
+  margin-bottom: 24px;
+}
+
+.dashboard-page select {
+  min-height: 40px;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg);
+  color: var(--text-h);
+  font: inherit;
+  margin-bottom: 24px;
+  cursor: pointer;
+}
+
+.dashboard-page .metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+}
+
+.dashboard-page .metric-card {
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+}
+
+.dashboard-page .metric-card h2 {
+  margin: 0 0 12px;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-h);
+}
+
+.dashboard-page .metric-card p {
+  margin: 4px 0;
+  font-size: 14px;
+  color: var(--text);
+}
+
+.dashboard-page .empty-state {
+  padding: 32px;
+  text-align: center;
+  color: var(--text);
+  font-size: 16px;
+}
+
+@media (max-width: 540px) {
+  .dashboard-page .metrics-grid {
+    grid-template-columns: 1fr;
+  }
+}
