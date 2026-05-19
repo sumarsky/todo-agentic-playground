@@ -1,4 +1,4 @@
-Status: ready-for-agent
+Status: done
 
 ## Parent
 
@@ -30,19 +30,19 @@ Add client-side routing to the frontend and build the Logs page.
 
 ## Acceptance criteria
 
-- [ ] `react-router-dom` installed and configured
-- [ ] `App.jsx` restructured with `<BrowserRouter>` and routes
-- [ ] `/logs` route renders the Logs page component
-- [ ] `/dashboard` route exists (placeholder is fine)
-- [ ] `/` route preserves existing TodoList functionality
-- [ ] Logs page fetches from `GET /api/logs`
-- [ ] Level dropdown filter works (All, Info, Warning, Error)
-- [ ] Message text search filter works
-- [ ] Both filters are combinable
-- [ ] Logs ordered by timestamp descending
-- [ ] Level is color-coded in the display
-- [ ] Component tests cover rendering, filtering, and empty state
-- [ ] All existing frontend tests still pass
+- [x] `react-router-dom` installed and configured
+- [x] `App.jsx` restructured with `<BrowserRouter>` and routes
+- [x] `/logs` route renders the Logs page component
+- [x] `/dashboard` route exists (placeholder is fine)
+- [x] `/` route preserves existing TodoList functionality
+- [x] Logs page fetches from `GET /api/logs`
+- [x] Level dropdown filter works (All, Info, Warning, Error)
+- [x] Message text search filter works
+- [x] Both filters are combinable
+- [x] Logs ordered by timestamp descending
+- [x] Level is color-coded in the display
+- [x] Component tests cover rendering, filtering, and empty state
+- [x] All existing frontend tests still pass
 
 ## Blocked by
 
