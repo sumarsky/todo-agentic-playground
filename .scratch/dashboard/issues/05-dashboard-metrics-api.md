@@ -1,4 +1,4 @@
-Status: ready-for-agent
+Status: done
 
 ## Parent
 
@@ -40,15 +40,15 @@ Only endpoints with at least one request in the window are included. The query f
 
 ## Acceptance criteria
 
-- [ ] `GET /api/dashboard/metrics` endpoint exists and returns JSON array
-- [ ] `window` query param filters entries by time window (1h, 24h, 7d, 30d)
-- [ ] Default window is 24h when param is omitted
-- [ ] Each entry includes endpoint, failureCount, avgDurationMs, totalRequests
-- [ ] Failure count includes 4xx and 5xx status codes
-- [ ] Entries grouped by HTTP method + path
-- [ ] Returns empty array when no entries exist for the window
-- [ ] Integration tests cover aggregation, time filtering, and empty results
-- [ ] All existing tests still pass
+- [x] `GET /api/dashboard/metrics` endpoint exists and returns JSON array
+- [x] `window` query param filters entries by time window (1h, 24h, 7d, 30d)
+- [x] Default window is 24h when param is omitted
+- [x] Each entry includes endpoint, failureCount, avgDurationMs, totalRequests
+- [x] Failure count includes 4xx and 5xx status codes
+- [x] Entries grouped by HTTP method + path
+- [x] Returns empty array when no entries exist for the window
+- [x] Integration tests cover aggregation, time filtering, and empty results
+- [x] All existing tests still pass
 
 ## Blocked by
 
