@@ -1,6 +1,6 @@
 # Create apiClient Module
 
-**Status:** ready-for-agent
+**Status:** done
 
 ---
 
@@ -14,12 +14,12 @@ The module should be a plain object of functions (not a class), accept `VITE_API
 
 ## Acceptance criteria
 
-- [ ] Module created at `frontend/src/api/apiClient.js`
-- [ ] All six todo methods implemented: `listTodos`, `createTodo`, `updateTodoTitle`, `toggleTodo`, `deleteTodo`, `bulkDeleteTodos`
-- [ ] All response status codes are checked; HTTP errors throw with `Error('HTTP ${status}')` or parsed message
-- [ ] Environment variable `VITE_API_URL` overrides default `http://localhost:5000`
-- [ ] Unit tests for apiClient cover all methods, error cases, and URL construction
-- [ ] Module can be imported and mocked in other files without side effects
+- [x] Module created at `frontend/src/api/apiClient.js`
+- [x] All six todo methods implemented: `listTodos`, `createTodo`, `updateTodoTitle`, `toggleTodo`, `deleteTodo`, `bulkDeleteTodos`
+- [x] All response status codes are checked; HTTP errors throw with `Error('HTTP ${status}')` or parsed message
+- [x] Environment variable `VITE_API_URL` overrides default `http://localhost:5000`
+- [x] Unit tests for apiClient cover all methods, error cases, and URL construction
+- [x] Module can be imported and mocked in other files without side effects
 
 ## Blocked by
 
@@ -30,3 +30,11 @@ None - can start immediately
 ## Parent
 
 Source: `.scratch/extract-frontend-context/PRD.md`
+
+---
+
+## Implementation Notes
+
+- 11 unit tests via Vitest, all passing
+- `checkResponse()` helper centralizes HTTP error handling
+- Plain object export, zero side effects, fully mockable
