@@ -1,6 +1,6 @@
 # Create useTodoSelection Hook
 
-**Status:** ready-for-agent
+**Status:** completed
 
 ---
 
