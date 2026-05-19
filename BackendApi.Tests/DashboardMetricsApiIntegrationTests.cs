@@ -19,6 +19,7 @@ public class DashboardMetricsApiIntegrationTests : IAsyncLifetime
         _factory = new TestWebApplicationFactory();
         _client = _factory.CreateClient();
         _logStore = (FakeLogStore)_factory.Services.GetRequiredService<ILogStore>();
+        _logStore.Clear();
         await Task.CompletedTask;
     }
 

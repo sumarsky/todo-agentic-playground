@@ -27,15 +27,6 @@ public class TestWebApplicationFactory : WebApplicationFactory<Program>
 
             services.AddSingleton<ITodoRepository, FakeTodoRepository>();
 
-            var logStoreDescriptor = services.SingleOrDefault(
-                d => d.ServiceType == typeof(ILogStore));
-            if (logStoreDescriptor != null)
-            {
-                services.Remove(logStoreDescriptor);
-            }
-
-            services.AddSingleton<ILogStore, FakeLogStore>();
-
             var migrationDescriptor = services.SingleOrDefault(
                 d => d.ServiceType == typeof(IHostedService)
                       && d.ImplementationType?.FullName == "BackendApi.Storage.Postgres.MigrationRunner");

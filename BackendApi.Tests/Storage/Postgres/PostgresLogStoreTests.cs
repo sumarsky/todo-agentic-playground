@@ -9,7 +9,7 @@ namespace BackendApi.Tests.Storage.Postgres;
 
 public class PostgresLogStoreTests : IAsyncLifetime
 {
-    private readonly PostgreSqlContainer _postgresContainer = new PostgreSqlBuilder()
+    private readonly PostgreSqlContainer _postgresContainer = new PostgreSqlBuilder("postgres:latest")
         .WithDatabase("testdb")
         .WithUsername("test")
         .WithPassword("test")
