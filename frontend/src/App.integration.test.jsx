@@ -110,6 +110,39 @@ describe('Todo app integration', () => {
     vi.restoreAllMocks();
   });
 
+  it('renders Dashboard and Logs navigation buttons on home page', async () => {
+    render(
+      <MemoryRouter initialEntries={['/']}>
+        <App />
+      </MemoryRouter>
+    );
+
+    expect(screen.getByRole('link', { name: /dashboard/i })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /logs/i })).toBeInTheDocument();
+  });
+
+  it('Dashboard link navigates to /dashboard', async () => {
+    render(
+      <MemoryRouter initialEntries={['/']}>
+        <App />
+      </MemoryRouter>
+    );
+
+    const dashboardLink = screen.getByRole('link', { name: /dashboard/i });
+    expect(dashboardLink).toHaveAttribute('href', '/dashboard');
+  });
+
+  it('Logs link navigates to /logs', async () => {
+    render(
+      <MemoryRouter initialEntries={['/']}>
+        <App />
+      </MemoryRouter>
+    );
+
+    const logsLink = screen.getByRole('link', { name: /logs/i });
+    expect(logsLink).toHaveAttribute('href', '/logs');
+  });
+
   it('supports add, list, filter, update, delete, and bulk delete through backend-shaped requests', async () => {
     render(
       <MemoryRouter initialEntries={['/']}>

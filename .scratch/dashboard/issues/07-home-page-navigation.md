@@ -1,4 +1,4 @@
-Status: ready-for-agent
+Status: done
 
 ## Parent
 
@@ -22,13 +22,13 @@ Add navigation buttons to the home page so users can discover and access the Das
 
 ## Acceptance criteria
 
-- [ ] "Dashboard" button visible on home page
-- [ ] "Logs" button visible on home page
-- [ ] Dashboard button navigates to `/dashboard` via client-side routing
-- [ ] Logs button navigates to `/logs` via client-side routing
-- [ ] Existing TodoList functionality is unchanged
-- [ ] Component tests verify button rendering and navigation
-- [ ] All existing frontend tests still pass
+- [x] "Dashboard" button visible on home page
+- [x] "Logs" button visible on home page
+- [x] Dashboard button navigates to `/dashboard` via client-side routing
+- [x] Logs button navigates to `/logs` via client-side routing
+- [x] Existing TodoList functionality is unchanged
+- [x] Component tests verify button rendering and navigation
+- [x] All existing frontend tests still pass
 
 ## Blocked by
 
