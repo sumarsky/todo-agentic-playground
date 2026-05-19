@@ -18,6 +18,14 @@ public class FakeLogStore : ILogStore
         return Task.CompletedTask;
     }
 
+    public void Clear()
+    {
+        lock (_lock)
+        {
+            _entries.Clear();
+        }
+    }
+
     public Task<IReadOnlyList<LogEntry>> QueryAsync(LogFilter filter, CancellationToken ct = default)
     {
         lock (_lock)
