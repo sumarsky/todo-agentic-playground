@@ -16,11 +16,11 @@ These types are the contract that the use case and calculator implementation wil
 
 ## Acceptance criteria
 
-- [ ] `BackendApi.Application/Models/EndpointMetric.cs` exists as an immutable record with all fields and computed properties
-- [ ] `ErrorRate` calculation handles zero total requests (returns 0)
-- [ ] `IsHealthy` threshold is hardcoded to 5% error rate
-- [ ] `BackendApi.Application/Ports/IMetricsCalculator.cs` exists with the `Calculate` method signature
-- [ ] Both types compile without errors
+- [x] `BackendApi.Application/Models/EndpointMetric.cs` exists as an immutable record with all fields and computed properties
+- [x] `ErrorRate` calculation handles zero total requests (returns 0)
+- [x] `IsHealthy` threshold is hardcoded to 5% error rate
+- [x] `BackendApi.Application/Ports/IMetricsCalculator.cs` exists with the `Calculate` method signature
+- [x] Both types compile without errors
 
 ## Blocked by
 
