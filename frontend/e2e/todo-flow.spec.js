@@ -9,17 +9,25 @@ test('user completes todo flow against real backend API', async ({ page }) => {
 
   await page.goto('/');
 
-  const titleInput = page.getByLabel('Todo title');
-  await titleInput.fill(writeTitle);
+  // Add first todo
   await page.getByRole('button', { name: 'Add todo' }).click();
+  let titleInput = page.getByLabel('Todo title');
+  await titleInput.fill(writeTitle);
+  await page.keyboard.press('Enter');
   await expect(page.getByText(writeTitle)).toBeVisible();
 
-  await titleInput.fill(shipTitle);
+  // Add second todo
   await page.getByRole('button', { name: 'Add todo' }).click();
+  titleInput = page.getByLabel('Todo title');
+  await titleInput.fill(shipTitle);
+  await page.keyboard.press('Enter');
   await expect(page.getByText(shipTitle)).toBeVisible();
 
-  await titleInput.fill(docsTitle);
+  // Add third todo
   await page.getByRole('button', { name: 'Add todo' }).click();
+  titleInput = page.getByLabel('Todo title');
+  await titleInput.fill(docsTitle);
+  await page.keyboard.press('Enter');
   await expect(page.getByText(docsTitle)).toBeVisible();
 
   await page.getByLabel('Search todos').fill('Write system');
@@ -34,12 +42,13 @@ test('user completes todo flow against real backend API', async ({ page }) => {
   await page.getByRole('button', { name: 'Save todo' }).click();
   await expect(page.getByText(updatedTitle)).toBeVisible();
 
-  await page.getByRole('checkbox', { name: `Mark ${updatedTitle} complete` }).click();
-  await page.getByRole('button', { name: 'Show completed todos' }).click();
+  // Click on the todo title to toggle completion
+  await page.getByText(updatedTitle).click();
+  await page.getByRole('button', { name: 'Filter completed' }).click();
   await expect(page.getByText(updatedTitle)).toBeVisible();
   await expect(page.getByText(shipTitle)).toBeHidden();
 
-  await page.getByRole('button', { name: 'Show completed todos' }).click();
+  await page.getByRole('button', { name: 'Filter completed' }).click();
   await expect(page.getByText(shipTitle)).toBeVisible();
 
   await page.getByRole('button', { name: `Delete ${shipTitle}` }).click();
