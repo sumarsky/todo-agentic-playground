@@ -24,14 +24,14 @@ The calculator is a pure function — no state, no side effects.
 
 ## Acceptance criteria
 
-- [ ] `BackendApi.Application/Services/DefaultMetricsCalculator.cs` implements `IMetricsCalculator`
-- [ ] Empty input list returns empty output list
-- [ ] Logs without all four HTTP fields (`HttpMethod`, `HttpPath`, `HttpStatus`, `DurationMs`) are filtered out
-- [ ] Logs are grouped correctly by `"{HttpMethod} {HttpPath}"` 
-- [ ] Error count only includes status codes >= 400
-- [ ] Average latency is calculated only from logs with non-null `DurationMs`
-- [ ] Multiple requests to the same endpoint produce one aggregated metric
-- [ ] Unit tests in `BackendApi.Tests/Application/DefaultMetricsCalculatorTests.cs` cover: empty logs, filtering, grouping, error counting, latency averaging, mixed error/success scenarios
+- [x] `BackendApi.Application/Services/DefaultMetricsCalculator.cs` implements `IMetricsCalculator`
+- [x] Empty input list returns empty output list
+- [x] Logs without all four HTTP fields (`HttpMethod`, `HttpPath`, `HttpStatus`, `DurationMs`) are filtered out
+- [x] Logs are grouped correctly by `"{HttpMethod} {HttpPath}"` 
+- [x] Error count only includes status codes >= 400
+- [x] Average latency is calculated only from logs with non-null `DurationMs`
+- [x] Multiple requests to the same endpoint produce one aggregated metric
+- [x] Unit tests in `BackendApi.Tests/Application/DefaultMetricsCalculatorTests.cs` cover: empty logs, filtering, grouping, error counting, latency averaging, mixed error/success scenarios
 
 ## Blocked by
 
