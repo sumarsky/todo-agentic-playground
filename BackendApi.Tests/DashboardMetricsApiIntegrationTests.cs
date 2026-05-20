@@ -37,8 +37,9 @@ public class DashboardMetricsApiIntegrationTests : IAsyncLifetime
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         var content = await response.Content.ReadAsStringAsync();
         var json = JsonDocument.Parse(content);
-        Assert.True(json.RootElement.ValueKind == JsonValueKind.Array);
-        Assert.Empty(json.RootElement.EnumerateArray());
+        var metricsArray = json.RootElement.GetProperty("metrics");
+        Assert.True(metricsArray.ValueKind == JsonValueKind.Array);
+        Assert.Empty(metricsArray.EnumerateArray());
     }
 
     [Fact]
@@ -50,12 +51,12 @@ public class DashboardMetricsApiIntegrationTests : IAsyncLifetime
         await SeedEntry("GET", "/todos", 200, 20, now.AddMinutes(-30));
         await SeedEntry("POST", "/todos", 500, 100, now.AddMinutes(-40));
 
-        var response = await _client.GetAsync("/api/dashboard/metrics?window=24h");
+        var response = await _client.GetAsync("/api/dashboard/metrics");
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         var content = await response.Content.ReadAsStringAsync();
         var json = JsonDocument.Parse(content);
-        var metrics = json.RootElement.EnumerateArray().ToList();
+        var metrics = json.RootElement.GetProperty("metrics").EnumerateArray().ToList();
         Assert.Equal(2, metrics.Count);
 
         var postTodos = metrics.First(m => m.GetProperty("endpoint").GetString() == "POST /todos");
@@ -91,10 +92,10 @@ public class DashboardMetricsApiIntegrationTests : IAsyncLifetime
         await SeedEntry("POST", "/todos", 500, 10, now.AddMinutes(-25));
         await SeedEntry("POST", "/todos", 503, 10, now.AddMinutes(-30));
 
-        var response = await _client.GetAsync("/api/dashboard/metrics?window=24h");
+        var response = await _client.GetAsync("/api/dashboard/metrics");
 
         var json = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
-        var metric = json.RootElement.EnumerateArray().Single();
+        var metric = json.RootElement.GetProperty("metrics").EnumerateArray().Single();
         Assert.Equal(4, metric.GetProperty("failureCount").GetInt32());
         Assert.Equal(5, metric.GetProperty("totalRequests").GetInt32());
     }
@@ -107,10 +108,10 @@ public class DashboardMetricsApiIntegrationTests : IAsyncLifetime
         await SeedEntry("GET", "/users", 200, 20.3, now.AddMinutes(-10));
         await SeedEntry("GET", "/users", 200, 15.2, now.AddMinutes(-15));
 
-        var response = await _client.GetAsync("/api/dashboard/metrics?window=24h");
+        var response = await _client.GetAsync("/api/dashboard/metrics");
 
         var json = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
-        var metric = json.RootElement.EnumerateArray().Single();
+        var metric = json.RootElement.GetProperty("metrics").EnumerateArray().Single();
         Assert.Equal(15.333333333333334, metric.GetProperty("avgDurationMs").GetDouble());
     }
 
@@ -124,11 +125,11 @@ public class DashboardMetricsApiIntegrationTests : IAsyncLifetime
         var response = await _client.GetAsync("/api/dashboard/metrics?window=1h");
 
         var json = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
-        Assert.Empty(json.RootElement.EnumerateArray());
+        Assert.Empty(json.RootElement.GetProperty("metrics").EnumerateArray());
     }
 
     [Fact]
-    public async Task GetMetrics_DefaultWindow_Is24h()
+    public async Task GetMetrics_DefaultWindow_Is1h()
     {
         var now = DateTime.UtcNow;
         await SeedEntry("GET", "/health", 200, 5, now.AddMinutes(-30));
@@ -136,6 +137,6 @@ public class DashboardMetricsApiIntegrationTests : IAsyncLifetime
         var response = await _client.GetAsync("/api/dashboard/metrics");
 
         var json = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
-        Assert.Single(json.RootElement.EnumerateArray());
+        Assert.Single(json.RootElement.GetProperty("metrics").EnumerateArray());
     }
 }

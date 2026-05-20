@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Diagnostics;
 using BackendApi.Application;
+using BackendApi.Application.Models;
 using BackendApi.Application.Ports;
 using BackendApi.Application.UseCases;
 using BackendApi.Contracts;
@@ -9,6 +10,7 @@ using BackendApi.Mappers;
 using BackendApi.Middleware;
 using BackendApi.Observability;
 using BackendApi.Storage.Postgres;
+using ContractsEndpointMetric = BackendApi.Contracts.EndpointMetric;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -171,29 +173,26 @@ app.MapGet("/api/logs", async (ILogStore logStore, string? level, string? messag
     return Results.Ok(LogMapper.ToResponses(entries));
 }).WithName("GetLogs");
 
-app.MapGet("/api/dashboard/metrics", async (ILogStore logStore, string? window) =>
+app.MapGet("/api/dashboard/metrics", async (CalculateMetricsUseCase calculateMetrics, HttpContext context, string? window) =>
 {
-    var windowHours = window switch
+    var timeWindow = window switch
     {
-        "1h" => 1,
-        "7d" => 168,
-        "30d" => 720,
-        _ => 24
+        "1h" => TimeSpan.FromHours(1),
+        "7d" => TimeSpan.FromDays(7),
+        "30d" => TimeSpan.FromDays(30),
+        _ => TimeSpan.FromHours(1)
     };
 
-    var filter = new LogFilter { Since = DateTimeOffset.UtcNow.AddHours(-windowHours) };
-    var entries = await logStore.QueryAsync(filter);
+    var metrics = await calculateMetrics.Execute(timeWindow, context.RequestAborted);
 
-    var metrics = entries
-        .GroupBy(e => $"{e.HttpMethod} {e.HttpPath}")
-        .Select(g => new EndpointMetric(
-            g.Key,
-            g.Count(e => e.HttpStatus >= 400),
-            g.Average(e => e.DurationMs ?? 0),
-            g.Count()))
-        .ToList();
+    var mappedMetrics = metrics.Select(m => new ContractsEndpointMetric(
+        m.Endpoint,
+        m.ErrorCount,
+        m.AverageLatencyMs,
+        m.TotalRequests
+    )).ToList();
 
-    return Results.Ok(metrics);
+    return Results.Ok(new MetricsResponse(mappedMetrics));
 }).WithName("GetDashboardMetrics");
 
 app.Run();

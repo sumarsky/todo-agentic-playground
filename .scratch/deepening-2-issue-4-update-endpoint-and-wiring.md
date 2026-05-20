@@ -24,19 +24,19 @@ Refactor the `GET /metrics` endpoint to use the new use case architecture, and w
 
 ## Acceptance criteria
 
-- [ ] `GET /metrics` endpoint compiles and runs
-- [ ] Endpoint injects `CalculateMetricsUseCase` as a dependency
-- [ ] Query parameter parsing works: "1h" → 1 hour, "7d" → 7 days, "30d" → 30 days, default → 1 hour
-- [ ] Endpoint calls `calculateMetrics.Execute(timeWindow, context.RequestAborted)`
-- [ ] Application model is mapped to contract before response (Application `ErrorCount` → Contract `FailureCount`, `AverageLatencyMs` → `AvgDurationMs`)
-- [ ] `builder.Services.AddApplication()` is called in `Program.cs`
-- [ ] `GET /metrics?window=1h` returns 200 with metrics array
-- [ ] `GET /metrics?window=7d` returns 200 with metrics array
-- [ ] `GET /metrics?window=30d` returns 200 with metrics array
-- [ ] `GET /metrics` (no window) defaults to 1h, returns 200
-- [ ] `GET /metrics?window=invalid` defaults to 1h, returns 200
-- [ ] All existing tests pass (no regression)
-- [ ] Endpoint integration tests verify request/response flow
+- [x] `GET /metrics` endpoint compiles and runs
+- [x] Endpoint injects `CalculateMetricsUseCase` as a dependency
+- [x] Query parameter parsing works: "1h" → 1 hour, "7d" → 7 days, "30d" → 30 days, default → 1 hour
+- [x] Endpoint calls `calculateMetrics.Execute(timeWindow, context.RequestAborted)`
+- [x] Application model is mapped to contract before response (Application `ErrorCount` → Contract `FailureCount`, `AverageLatencyMs` → `AvgDurationMs`)
+- [x] `builder.Services.AddApplication()` is called in `Program.cs`
+- [x] `GET /metrics?window=1h` returns 200 with metrics array
+- [x] `GET /metrics?window=7d` returns 200 with metrics array
+- [x] `GET /metrics?window=30d` returns 200 with metrics array
+- [x] `GET /metrics` (no window) defaults to 1h, returns 200
+- [x] `GET /metrics?window=invalid` defaults to 1h, returns 200
+- [x] All existing tests pass (no regression)
+- [x] Endpoint integration tests verify request/response flow
 
 ## Blocked by
 
