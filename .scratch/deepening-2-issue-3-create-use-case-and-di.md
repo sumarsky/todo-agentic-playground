@@ -24,13 +24,17 @@ Create the use case that orchestrates log retrieval and metrics calculation, plu
 
 ## Acceptance criteria
 
-- [ ] `BackendApi.Application/UseCases/CalculateMetricsUseCase.cs` exists with correct constructor and `Execute` method signature
-- [ ] `BackendApi.Application/Extensions/ServiceCollectionExtensions.cs` exists with `AddApplication()` method
-- [ ] `AddApplication()` registers both use case and calculator with correct lifetimes
-- [ ] `CalculateMetricsUseCase` calculates `since` correctly: `DateTime.UtcNow - window`
-- [ ] `Execute` returns the result of `_calculator.Calculate()` without modification
-- [ ] Unit tests in `BackendApi.Tests/Application/CalculateMetricsUseCaseTests.cs` cover: successful query and aggregation, cancellation token propagation, empty result handling, with real `DefaultMetricsCalculator` and mocked `ILogStore`
-- [ ] Compilation succeeds
+- [x] `BackendApi.Application/UseCases/CalculateMetricsUseCase.cs` exists with correct constructor and `Execute` method signature
+- [x] `BackendApi.Application/Extensions/ServiceCollectionExtensions.cs` exists with `AddApplication()` method
+- [x] `AddApplication()` registers both use case and calculator with correct lifetimes
+- [x] `CalculateMetricsUseCase` calculates `since` correctly: `DateTime.UtcNow - window`
+- [x] `Execute` returns the result of `_calculator.Calculate()` without modification
+- [x] Unit tests in `BackendApi.Tests/Application/CalculateMetricsUseCaseTests.cs` cover: successful query and aggregation, cancellation token propagation, empty result handling, with real `DefaultMetricsCalculator` and mocked `ILogStore`
+- [x] Compilation succeeds
+
+## Status
+
+Done
 
 ## Blocked by
 

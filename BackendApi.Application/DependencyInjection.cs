@@ -15,7 +15,8 @@ public static class DependencyInjection
         services.AddTransient<UseCases.DeleteTodoUseCase>();
         services.AddTransient<UseCases.BulkDeleteTodoUseCase>();
 
-        services.AddTransient<IMetricsCalculator, DefaultMetricsCalculator>();
+        services.AddScoped<UseCases.CalculateMetricsUseCase>();
+        services.AddSingleton<IMetricsCalculator, DefaultMetricsCalculator>();
 
         return services;
     }
