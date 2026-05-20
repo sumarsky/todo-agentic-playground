@@ -51,6 +51,7 @@ describe('TodoContextProvider - Actions', () => {
       ];
 
       globalThis.fetch.mockResolvedValueOnce({
+        ok: true,
         json: async () => mockTodos,
       });
 
@@ -102,6 +103,7 @@ describe('TodoContextProvider - Actions', () => {
       });
 
       resolveRequest({
+        ok: true,
         json: async () => mockTodos,
       });
 
@@ -119,6 +121,7 @@ describe('TodoContextProvider - Actions', () => {
       ];
 
       globalThis.fetch.mockResolvedValueOnce({
+        ok: true,
         json: async () => mockTodos,
       });
 
@@ -157,6 +160,7 @@ describe('TodoContextProvider - Actions', () => {
       const mockTodos = [{ id: '1', title: 'Docs', completed: true }];
 
       globalThis.fetch.mockResolvedValueOnce({
+        ok: true,
         json: async () => mockTodos,
       });
 
@@ -187,6 +191,7 @@ describe('TodoContextProvider - Actions', () => {
       const newTodo = { id: '2', title: 'New Task' };
 
       globalThis.fetch.mockResolvedValueOnce({
+        ok: true,
         json: async () => newTodo,
       });
 
@@ -270,9 +275,11 @@ describe('TodoContextProvider - Actions', () => {
 
       globalThis.fetch
         .mockResolvedValueOnce({
+          ok: true,
           json: async () => ({ id: '1', title: 'New Title', completed: false }),
         })
         .mockResolvedValueOnce({
+          ok: true,
           json: async () => updated,
         });
 
@@ -324,6 +331,7 @@ describe('TodoContextProvider - Actions', () => {
       ];
 
       globalThis.fetch.mockResolvedValueOnce({
+        ok: true,
         json: async () => ({}),
       });
 
@@ -370,6 +378,7 @@ describe('TodoContextProvider - Actions', () => {
       ];
 
       globalThis.fetch.mockResolvedValueOnce({
+        ok: true,
         json: async () => ({}),
       });
 

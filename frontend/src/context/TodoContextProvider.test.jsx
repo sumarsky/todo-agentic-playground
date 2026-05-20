@@ -17,7 +17,7 @@ const TestConsumer = () => {
 
 describe('TodoContextProvider', () => {
   beforeEach(() => {
-    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ json: async () => [] }));
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, json: async () => [] }));
   });
 
   afterEach(() => {

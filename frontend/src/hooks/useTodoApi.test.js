@@ -67,7 +67,7 @@ describe('useTodoApi', () => {
       const { result } = renderHook(() => useTodoApi({ apiClient: mockClient }));
 
       await act(async () => {
-        await result.current.listTodos();
+        await expect(result.current.listTodos()).rejects.toThrow('Network error');
       });
 
       expect(result.current.error).toBe('Network error');
@@ -82,7 +82,7 @@ describe('useTodoApi', () => {
       const { result } = renderHook(() => useTodoApi({ apiClient: mockClient }));
 
       await act(async () => {
-        await result.current.listTodos();
+        await expect(result.current.listTodos()).rejects.toThrow('First error');
       });
       expect(result.current.error).toBe('First error');
 
@@ -115,7 +115,7 @@ describe('useTodoApi', () => {
       const { result } = renderHook(() => useTodoApi({ apiClient: mockClient }));
 
       await act(async () => {
-        await result.current.addTodo('New');
+        await expect(result.current.addTodo('New')).rejects.toThrow('Duplicate');
       });
 
       expect(result.current.error).toBe('Duplicate');
@@ -151,7 +151,7 @@ describe('useTodoApi', () => {
       const { result } = renderHook(() => useTodoApi({ apiClient: mockClient }));
 
       await act(async () => {
-        await result.current.updateTodo(999, 'New');
+        await expect(result.current.updateTodo(999, 'New')).rejects.toThrow('Not found');
       });
 
       expect(result.current.error).toBe('Not found');
@@ -188,7 +188,7 @@ describe('useTodoApi', () => {
       const { result } = renderHook(() => useTodoApi({ apiClient: mockClient }));
 
       await act(async () => {
-        await result.current.deleteTodo(999);
+        await expect(result.current.deleteTodo(999)).rejects.toThrow('Not found');
       });
 
       expect(result.current.error).toBe('Not found');
@@ -226,7 +226,7 @@ describe('useTodoApi', () => {
       const { result } = renderHook(() => useTodoApi({ apiClient: mockClient }));
 
       await act(async () => {
-        await result.current.bulkDeleteTodos([1, 2]);
+        await expect(result.current.bulkDeleteTodos([1, 2])).rejects.toThrow('Server error');
       });
 
       expect(result.current.error).toBe('Server error');

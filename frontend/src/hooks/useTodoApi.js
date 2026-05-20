@@ -1,8 +1,8 @@
 import { useState, useCallback } from 'react';
 import { apiClient } from '../api/apiClient';
 
-export function useTodoApi({ apiClient: injectedClient } = {}) {
-  const [todos, setTodos] = useState([]);
+export function useTodoApi({ apiClient: injectedClient, initialTodos = [] } = {}) {
+  const [todos, setTodos] = useState(initialTodos);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -14,8 +14,10 @@ export function useTodoApi({ apiClient: injectedClient } = {}) {
     try {
       const result = await fn();
       if (onSuccess) onSuccess(result);
+      return result;
     } catch (err) {
       setError(err.message);
+      throw err;
     } finally {
       setLoading(false);
     }
