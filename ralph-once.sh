@@ -1,6 +1,6 @@
 #!/bin/bash
 
-codex "@.scratch\remove-identity-passthrough-tests\PRD.md \
+opencode --prompt "PRD.md \
 1. Read the PRD. \
 2. Find the next incomplete issue and implement it. \
 3. Commit your changes. \
