@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 
-const API_BASE_URL = 'http://localhost:5000'
+import { FRONTEND_API_BASE_URL } from '../config/api'
 
 export function DashboardPage() {
   const [metrics, setMetrics] = useState([])
@@ -8,7 +8,7 @@ export function DashboardPage() {
 
   useEffect(() => {
     const fetchMetrics = async () => {
-      const res = await fetch(`${API_BASE_URL}/api/dashboard/metrics?window=${window}`)
+      const res = await fetch(`${FRONTEND_API_BASE_URL}/api/dashboard/metrics?window=${window}`)
       const data = await res.json()
       setMetrics(data)
     }

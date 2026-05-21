@@ -1,4 +1,4 @@
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+import { FRONTEND_API_BASE_URL } from '../config/api';
 
 async function checkResponse(res) {
   if (!res.ok) {
@@ -22,13 +22,13 @@ export const apiClient = {
     if (filters.completed) params.set('completed', 'true');
     if (filters.search) params.set('search', filters.search);
     const query = params.toString();
-    const url = `${API_BASE_URL}/todos${query ? `?${query}` : ''}`;
+    const url = `${FRONTEND_API_BASE_URL}/todos${query ? `?${query}` : ''}`;
     const res = await fetch(url);
     return (await checkResponse(res)).json();
   },
 
   async createTodo(title) {
-    const res = await fetch(`${API_BASE_URL}/todos`, {
+    const res = await fetch(`${FRONTEND_API_BASE_URL}/todos`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ title }),
@@ -37,7 +37,7 @@ export const apiClient = {
   },
 
   async updateTodoTitle(id, title) {
-    const res = await fetch(`${API_BASE_URL}/todos/${id}/title`, {
+    const res = await fetch(`${FRONTEND_API_BASE_URL}/todos/${id}/title`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ title }),
@@ -46,14 +46,14 @@ export const apiClient = {
   },
 
   async toggleTodo(id) {
-    const res = await fetch(`${API_BASE_URL}/todos/${id}/toggle`, {
+    const res = await fetch(`${FRONTEND_API_BASE_URL}/todos/${id}/toggle`, {
       method: 'PUT',
     });
     return (await checkResponse(res)).json();
   },
 
   async deleteTodo(id) {
-    const res = await fetch(`${API_BASE_URL}/todos/${id}`, {
+    const res = await fetch(`${FRONTEND_API_BASE_URL}/todos/${id}`, {
       method: 'DELETE',
     });
     await checkResponse(res);
@@ -62,7 +62,7 @@ export const apiClient = {
   async bulkDeleteTodos(ids) {
     const params = new URLSearchParams();
     params.set('ids', ids.join(','));
-    const res = await fetch(`${API_BASE_URL}/todos?${params.toString()}`, {
+    const res = await fetch(`${FRONTEND_API_BASE_URL}/todos?${params.toString()}`, {
       method: 'DELETE',
     });
     await checkResponse(res);

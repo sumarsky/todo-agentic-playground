@@ -17,16 +17,16 @@ export const TodoContextProvider = ({ children, initialTodos = [] }) => {
     todosRef.current = todos;
   }, [todos]);
 
+  const listTodos = async (nextFilters = filters) => {
+    const result = await apiListTodos(nextFilters);
+    return result;
+  };
+
   useEffect(() => {
     if (initialTodos.length === 0) {
       listTodos();
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
-  const listTodos = async (nextFilters = filters) => {
-    const result = await apiListTodos(nextFilters);
-    return result;
-  };
 
   const addTodo = async (title) => {
     const newTodo = await apiAddTodo(title);

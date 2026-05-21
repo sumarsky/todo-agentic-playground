@@ -2,7 +2,6 @@ import { describe, it, expect, vi } from 'vitest';
 import { useState } from 'react';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { TodoContext } from '../context/TodoContextValue';
-import { TodoContextProvider } from '../context/TodoContext';
 import { BulkDeleteButton } from './BulkDeleteButton';
 import { FilterBar } from './FilterBar';
 import { InlineAddForm } from './InlineAddForm';

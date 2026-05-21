@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 
-const API_BASE_URL = 'http://localhost:5000'
+import { FRONTEND_API_BASE_URL } from '../config/api'
 
 export function LogsPage() {
   const [logs, setLogs] = useState([])
@@ -13,7 +13,7 @@ export function LogsPage() {
       if (level) params.set('level', level)
       if (message) params.set('message', message)
       const query = params.toString()
-      const url = `${API_BASE_URL}/api/logs${query ? `?${query}` : ''}`
+      const url = `${FRONTEND_API_BASE_URL}/api/logs${query ? `?${query}` : ''}`
       const res = await fetch(url)
       const data = await res.json()
       const sorted = [...data].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
