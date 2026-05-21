@@ -48,7 +48,7 @@ Domain models are immutable. State changes return new instances (copy-on write).
 - `id`: UUID generated on creation.
 - `title`: required non-whitespace string.
 - `completed`: boolean, defaults to `false`.
-- `createdAt`: UTC timestamp set on creation.
+- `createdAt`: `DateTimeOffset` set on creation.
 
 Invariants:
 
@@ -106,13 +106,21 @@ Unhandled exceptions return:
 - "Solution split" means splitting backend .NET layers into separate projects while leaving the React frontend unchanged.
 - Backend split projects keep the `BackendApi.*` naming prefix for now.
 - Namespaces should match project boundaries; API HTTP request/response types live under `BackendApi.Contracts`.
+- Domain models must never be used as adapter or endpoint contracts (DTOs are used for that).
+- Storage adapters define their own DTO models for database persistence and map to/from domain models at repository boundaries.
+- Domain models have no persistence constructors (e.g. no Dapper materialization constructor).
 - Repository is intentionally in-memory for current scope.
 - Persistence can change behind `ITodoRepository`.
 - Repository ports belong in the application layer under `Ports`; domain model stays persistence-free.
-- Domain rules belong in the domain model.
+- Domain model properties should use DDD value types when it makes sense, implemented as `readonly record struct` (e.g. `TodoId`, `TodoTitle`).
+- Query/filter inputs that map to domain concepts also use value types wrapping the appropriate primitive (e.g. a `TodoTitleSearch` wrapping `string?`), even when no validation is needed — the type itself carries intent.
+- IDs of domain models must be value types, not `Guid` or `int` directly.
+- Dapper must never interact with domain models or value types. Storage adapters define their own DTO models (primitives) for database persistence and map to/from domain models at repository boundaries.
+- Domain models have no persistence constructors (e.g. no Dapper materialization constructor).
+- Domain rules belong in the domain model. Title validation lives only in `Todo` constructor and `WithTitle`; use cases do not duplicate it.
 - Application orchestration belongs in application use cases/services.
 - Use cases stay as concrete classes; do not add one-method interfaces unless a real second implementation appears.
-- Do not add clock or ID generator ports during the split; introduce them only when deterministic time or ID generation becomes a real need.
+- `TodoId` implements `IParsable<TodoId>` so ASP.NET Core minimal APIs bind it directly from route strings.
 - API endpoints call application use cases directly; avoid a facade that only forwards to use cases.
 - HTTP request/response DTOs and HTTP mappers belong in the API layer, not application.
 - API layer should map HTTP requests/responses and keep business rules out.
