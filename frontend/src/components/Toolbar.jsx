@@ -1,11 +1,9 @@
-import { useContext, useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { Search, Plus, Filter } from 'lucide-react';
-import { TodoContext } from '../context/TodoContextValue';
 import { useTodoFilterControls } from '../hooks/useTodoFilterControls';
 
 export const Toolbar = ({ onAddClick, onSelectAll, isAllSelected, isIndeterminate }) => {
-  const { setSearchFilter, listTodos } = useContext(TodoContext);
-  const { filters, toggleCompletedFilter } = useTodoFilterControls();
+  const { filters, toggleCompletedFilter, updateSearchFilter } = useTodoFilterControls();
   const checkboxRef = useRef(null);
 
   useEffect(() => {
@@ -15,10 +13,7 @@ export const Toolbar = ({ onAddClick, onSelectAll, isAllSelected, isIndeterminat
   }, [isIndeterminate]);
 
   const handleSearchChange = (event) => {
-    const search = event.target.value;
-    const nextFilters = { ...filters, search };
-    setSearchFilter(search);
-    listTodos(nextFilters);
+    updateSearchFilter(event.target.value);
   };
 
   return (

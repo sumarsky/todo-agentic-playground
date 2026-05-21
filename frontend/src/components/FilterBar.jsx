@@ -1,17 +1,11 @@
-import { useContext } from 'react';
 import { Filter } from 'lucide-react';
-import { TodoContext } from '../context/TodoContextValue';
 import { useTodoFilterControls } from '../hooks/useTodoFilterControls';
 
 export const FilterBar = () => {
-  const { setSearchFilter, listTodos } = useContext(TodoContext);
-  const { filters, toggleCompletedFilter } = useTodoFilterControls();
+  const { filters, toggleCompletedFilter, updateSearchFilter } = useTodoFilterControls();
 
   const handleSearchChange = (event) => {
-    const search = event.target.value;
-    const nextFilters = { ...filters, search };
-    setSearchFilter(search);
-    listTodos(nextFilters);
+    updateSearchFilter(event.target.value);
   };
 
   return (

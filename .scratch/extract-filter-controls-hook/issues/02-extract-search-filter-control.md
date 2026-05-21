@@ -1,6 +1,6 @@
 # Extract Search Filter Control
 
-Status: ready-for-agent
+Status: done
 
 ## Parent
 
@@ -14,13 +14,13 @@ This slice should preserve existing behavior rather than introducing debounce, t
 
 ## Acceptance criteria
 
-- [ ] The todo filter controls hook exposes a search-filter update command.
-- [ ] The search-filter update command calls the existing search-filter setter with the provided text.
-- [ ] The search-filter update command calls todo loading with the current filters merged with the next search value.
-- [ ] Toolbar search input changes use the shared search command without changing toolbar add, select-all, icon, label, or accessibility behavior.
-- [ ] Filter bar search input changes use the shared search command without changing its visual or accessibility behavior.
-- [ ] Search remains immediate and fire-and-forget.
-- [ ] Focused hook tests verify the search setter call and todo-loading payload using a minimal context provider wrapper.
+- [x] The todo filter controls hook exposes a search-filter update command.
+- [x] The search-filter update command calls the existing search-filter setter with the provided text.
+- [x] The search-filter update command calls todo loading with the current filters merged with the next search value.
+- [x] Toolbar search input changes use the shared search command without changing toolbar add, select-all, icon, label, or accessibility behavior.
+- [x] Filter bar search input changes use the shared search command without changing its visual or accessibility behavior.
+- [x] Search remains immediate and fire-and-forget.
+- [x] Focused hook tests verify the search setter call and todo-loading payload using a minimal context provider wrapper.
 
 ## Blocked by
 

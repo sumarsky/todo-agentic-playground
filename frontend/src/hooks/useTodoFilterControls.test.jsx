@@ -76,4 +76,20 @@ describe('useTodoFilterControls', () => {
     expect(setCompletedFilter).toHaveBeenCalledWith(false);
     expect(listTodos).toHaveBeenCalledWith({ completed: false, search: 'docs' });
   });
+
+  it('updates search and loads todos with merged filters', () => {
+    const setSearchFilter = vi.fn();
+    const listTodos = vi.fn();
+
+    const { result } = renderUseTodoFilterControls({
+      filters: { completed: true, search: 'docs' },
+      setSearchFilter,
+      listTodos,
+    });
+
+    act(() => result.current.updateSearchFilter('api'));
+
+    expect(setSearchFilter).toHaveBeenCalledWith('api');
+    expect(listTodos).toHaveBeenCalledWith({ completed: true, search: 'api' });
+  });
 });
