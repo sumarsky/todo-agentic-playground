@@ -182,4 +182,49 @@ public class PostgresTodoRepositoryTests : IAsyncLifetime
         Assert.All(result, t => Assert.True(t.Completed));
         Assert.All(result, t => Assert.Contains("Buy", t.Title));
     }
+
+    [Fact]
+    public async Task DeleteAsync_RemovesTodoAndPreservesOthers()
+    {
+        // Arrange
+        var todo1 = new Todo(Guid.NewGuid(), "Todo 1");
+        var todo2 = new Todo(Guid.NewGuid(), "Todo 2");
+        var todo3 = new Todo(Guid.NewGuid(), "Todo 3");
+
+        await _repository!.AddAsync(todo1);
+        await _repository.AddAsync(todo2);
+        await _repository.AddAsync(todo3);
+
+        // Act
+        await _repository.DeleteAsync(todo2.Id);
+
+        // Assert
+        Assert.NotNull(await _repository.GetByIdAsync(todo1.Id));
+        Assert.Null(await _repository.GetByIdAsync(todo2.Id));
+        Assert.NotNull(await _repository.GetByIdAsync(todo3.Id));
+    }
+
+    [Fact]
+    public async Task DeleteByIdsAsync_RemovesMatchingTodosAndPreservesOthers()
+    {
+        // Arrange
+        var todo1 = new Todo(Guid.NewGuid(), "Todo 1");
+        var todo2 = new Todo(Guid.NewGuid(), "Todo 2");
+        var todo3 = new Todo(Guid.NewGuid(), "Todo 3");
+        var todo4 = new Todo(Guid.NewGuid(), "Todo 4");
+
+        await _repository!.AddAsync(todo1);
+        await _repository.AddAsync(todo2);
+        await _repository.AddAsync(todo3);
+        await _repository.AddAsync(todo4);
+
+        // Act
+        await _repository.DeleteByIdsAsync(new[] { todo1.Id, todo3.Id });
+
+        // Assert
+        Assert.Null(await _repository.GetByIdAsync(todo1.Id));
+        Assert.NotNull(await _repository.GetByIdAsync(todo2.Id));
+        Assert.Null(await _repository.GetByIdAsync(todo3.Id));
+        Assert.NotNull(await _repository.GetByIdAsync(todo4.Id));
+    }
 }

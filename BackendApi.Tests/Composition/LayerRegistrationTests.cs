@@ -22,9 +22,17 @@ public class LayerRegistrationTests
 
         var createUseCase = provider.GetRequiredService<CreateTodoUseCase>();
         var listUseCase = provider.GetRequiredService<ListTodosUseCase>();
+        var updateTitleUseCase = provider.GetRequiredService<UpdateTitleUseCase>();
+        var toggleCompletedUseCase = provider.GetRequiredService<ToggleCompletedUseCase>();
+        var deleteUseCase = provider.GetRequiredService<DeleteTodoUseCase>();
+        var bulkDeleteUseCase = provider.GetRequiredService<BulkDeleteTodoUseCase>();
 
         Assert.NotNull(createUseCase);
         Assert.NotNull(listUseCase);
+        Assert.NotNull(updateTitleUseCase);
+        Assert.NotNull(toggleCompletedUseCase);
+        Assert.NotNull(deleteUseCase);
+        Assert.NotNull(bulkDeleteUseCase);
     }
 
     [Fact]
