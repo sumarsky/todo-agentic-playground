@@ -1,9 +1,11 @@
 import { useContext, useEffect, useRef } from 'react';
 import { Search, Plus, Filter } from 'lucide-react';
 import { TodoContext } from '../context/TodoContextValue';
+import { useTodoFilterControls } from '../hooks/useTodoFilterControls';
 
 export const Toolbar = ({ onAddClick, onSelectAll, isAllSelected, isIndeterminate }) => {
-  const { filters, setSearchFilter, setCompletedFilter, listTodos } = useContext(TodoContext);
+  const { setSearchFilter, listTodos } = useContext(TodoContext);
+  const { filters, toggleCompletedFilter } = useTodoFilterControls();
   const checkboxRef = useRef(null);
 
   useEffect(() => {
@@ -16,13 +18,6 @@ export const Toolbar = ({ onAddClick, onSelectAll, isAllSelected, isIndeterminat
     const search = event.target.value;
     const nextFilters = { ...filters, search };
     setSearchFilter(search);
-    listTodos(nextFilters);
-  };
-
-  const handleFilterClick = () => {
-    const completed = !filters.completed;
-    const nextFilters = { ...filters, completed };
-    setCompletedFilter(completed);
     listTodos(nextFilters);
   };
 
@@ -41,7 +36,7 @@ export const Toolbar = ({ onAddClick, onSelectAll, isAllSelected, isIndeterminat
         <Plus size={18} />
         <span className="sr-only">Add todo</span>
       </button>
-      <button type="button" aria-pressed={filters.completed} onClick={handleFilterClick} title="Toggle completed">
+      <button type="button" aria-pressed={filters.completed} onClick={toggleCompletedFilter} title="Toggle completed">
         <Filter size={18} />
         <span className="sr-only">Filter completed</span>
       </button>

@@ -1,6 +1,6 @@
 # Extract Completed Filter Control
 
-Status: ready-for-agent
+Status: done
 
 ## Parent
 
@@ -14,13 +14,13 @@ This slice should preserve the existing filter state ownership: the existing fil
 
 ## Acceptance criteria
 
-- [ ] A reusable todo filter controls hook exposes the current filters and a completed-filter toggle command.
-- [ ] The completed-filter toggle command calls the existing completed-filter setter with the next boolean value.
-- [ ] The completed-filter toggle command calls todo loading with the current filters merged with the next completed value.
-- [ ] The hook does not create or own independent filter state.
-- [ ] Components that previously duplicated completed-filter toggling now use the shared command.
-- [ ] Existing completed-filter behavior remains fire-and-forget and does not await todo loading.
-- [ ] Focused hook tests verify the completed-filter setter call and todo-loading payload using a minimal context provider wrapper.
+- [x] A reusable todo filter controls hook exposes the current filters and a completed-filter toggle command.
+- [x] The completed-filter toggle command calls the existing completed-filter setter with the next boolean value.
+- [x] The completed-filter toggle command calls todo loading with the current filters merged with the next completed value.
+- [x] The hook does not create or own independent filter state.
+- [x] Components that previously duplicated completed-filter toggling now use the shared command.
+- [x] Existing completed-filter behavior remains fire-and-forget and does not await todo loading.
+- [x] Focused hook tests verify the completed-filter setter call and todo-loading payload using a minimal context provider wrapper.
 
 ## Blocked by
 

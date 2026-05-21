@@ -1,16 +1,11 @@
 import { useContext } from 'react';
 import { Filter } from 'lucide-react';
 import { TodoContext } from '../context/TodoContextValue';
+import { useTodoFilterControls } from '../hooks/useTodoFilterControls';
 
 export const FilterBar = () => {
-  const { filters, setCompletedFilter, setSearchFilter, listTodos } = useContext(TodoContext);
-
-  const handleCompletedClick = () => {
-    const completed = !filters.completed;
-    const nextFilters = { ...filters, completed };
-    setCompletedFilter(completed);
-    listTodos(nextFilters);
-  };
+  const { setSearchFilter, listTodos } = useContext(TodoContext);
+  const { filters, toggleCompletedFilter } = useTodoFilterControls();
 
   const handleSearchChange = (event) => {
     const search = event.target.value;
@@ -32,7 +27,7 @@ export const FilterBar = () => {
         type="button"
         aria-pressed={filters.completed}
         title="Toggle completed"
-        onClick={handleCompletedClick}
+        onClick={toggleCompletedFilter}
       >
         <Filter size={18} />
         <span className="sr-only">Show completed todos</span>
