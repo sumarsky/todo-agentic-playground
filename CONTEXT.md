@@ -61,6 +61,8 @@ Invariants:
 
 ## API
 
+Frontend API base URL is the base origin the React frontend uses for backend HTTP requests, including todos, dashboard metrics, and logs.
+
 Frontend dev base URL:
 
 ```text
