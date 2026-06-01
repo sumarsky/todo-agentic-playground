@@ -8,38 +8,34 @@ public class TodoTests
     [Fact]
     public void Create_WithTitleAndId_SetsDefaults()
     {
-        var id = Guid.NewGuid();
-        var title = "Buy milk";
-        var now = DateTime.UtcNow;
+        var id = TodoId.New();
+        var title = new TodoTitle("Buy milk");
+        var now = DateTimeOffset.UtcNow;
 
         var todo = new Todo(id, title);
 
         Assert.Equal(id, todo.Id);
         Assert.Equal(title, todo.Title);
         Assert.False(todo.Completed);
-        Assert.True(todo.CreatedAt >= now && todo.CreatedAt <= DateTime.UtcNow.AddSeconds(1));
+        Assert.True(todo.CreatedAt >= now && todo.CreatedAt <= DateTimeOffset.UtcNow.AddSeconds(1));
     }
 
     [Fact]
     public void Create_WithNullTitle_Throws()
     {
-        var id = Guid.NewGuid();
-
-        Assert.Throws<ArgumentException>(() => new Todo(id, null!));
+        Assert.Throws<ArgumentException>(() => new TodoTitle(null!));
     }
 
     [Fact]
     public void Create_WithEmptyTitle_Throws()
     {
-        var id = Guid.NewGuid();
-
-        Assert.Throws<ArgumentException>(() => new Todo(id, ""));
+        Assert.Throws<ArgumentException>(() => new TodoTitle(""));
     }
 
     [Fact]
     public void ToggleCompleted_ReturnsNewInstanceWithFlippedState()
     {
-        var todo = new Todo(Guid.NewGuid(), "Task");
+        var todo = new Todo(TodoId.New(), new TodoTitle("Task"));
         Assert.False(todo.Completed);
 
         var toggled = todo.ToggleCompleted();
@@ -52,7 +48,7 @@ public class TodoTests
     [Fact]
     public void ToggleCompleted_Twice_ReturnsToOriginal()
     {
-        var todo = new Todo(Guid.NewGuid(), "Task");
+        var todo = new Todo(TodoId.New(), new TodoTitle("Task"));
 
         var toggled = todo.ToggleCompleted();
         var toggledAgain = toggled.ToggleCompleted();
@@ -64,23 +60,23 @@ public class TodoTests
     [Fact]
     public void WithTitle_ReturnsNewInstanceWithUpdatedTitle()
     {
-        var todo = new Todo(Guid.NewGuid(), "Original");
+        var todo = new Todo(TodoId.New(), new TodoTitle("Original"));
 
-        var updated = todo.WithTitle("Updated");
+        var updated = todo.WithTitle(new TodoTitle("Updated"));
 
-        Assert.Equal("Updated", updated.Title);
-        Assert.Equal("Original", todo.Title);
+        Assert.Equal(new TodoTitle("Updated"), updated.Title);
+        Assert.Equal(new TodoTitle("Original"), todo.Title);
         Assert.NotSame(todo, updated);
     }
 
     [Fact]
     public void WithTitle_PreservesOtherFields()
     {
-        var id = Guid.NewGuid();
-        var original = new Todo(id, "Original");
+        var id = TodoId.New();
+        var original = new Todo(id, new TodoTitle("Original"));
         var toggled = original.ToggleCompleted();
 
-        var updated = toggled.WithTitle("Updated");
+        var updated = toggled.WithTitle(new TodoTitle("Updated"));
 
         Assert.Equal(id, updated.Id);
         Assert.True(updated.Completed);
@@ -90,16 +86,14 @@ public class TodoTests
     [Fact]
     public void WithTitle_WithEmptyTitle_Throws()
     {
-        var todo = new Todo(Guid.NewGuid(), "Task");
-
-        Assert.Throws<ArgumentException>(() => todo.WithTitle(""));
+        Assert.Throws<ArgumentException>(() => new TodoTitle(""));
     }
 
     [Fact]
     public void Id_IsImmutable()
     {
-        var id1 = Guid.NewGuid();
-        var todo = new Todo(id1, "Task");
+        var id1 = TodoId.New();
+        var todo = new Todo(id1, new TodoTitle("Task"));
 
         var id2 = todo.Id;
         Assert.Equal(id1, id2);
@@ -108,7 +102,7 @@ public class TodoTests
     [Fact]
     public void CreatedAt_IsImmutable()
     {
-        var todo = new Todo(Guid.NewGuid(), "Task");
+        var todo = new Todo(TodoId.New(), new TodoTitle("Task"));
         var createdAt = todo.CreatedAt;
 
         Assert.Equal(createdAt, todo.CreatedAt);

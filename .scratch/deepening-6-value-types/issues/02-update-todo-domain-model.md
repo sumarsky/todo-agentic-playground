@@ -1,6 +1,6 @@
 # 02: Update Todo Domain Model to Use Value Types
 
-**Status:** ready-for-agent
+**Status:** completed
 
 ## Description
 
