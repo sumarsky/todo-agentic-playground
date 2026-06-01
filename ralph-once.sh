@@ -1,6 +1,6 @@
 #!/bin/bash
 
-opencode --prompt "PRD.md \
+codex --sandbox danger-full-access --ask-for-approval never ".scratch\deepening-6-value-types\PRD.md \
 1. Read the PRD. \
 2. Find the next incomplete issue and implement it. \
 3. Commit your changes. \

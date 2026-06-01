@@ -7,7 +7,7 @@ if [ -z "$1" ]; then
 fi
 
 for ((i=1; i<=$1; i++)); do
-  result=$(docker sandbox run opencode run "@PRD.md \
+  result=$(docker sandbox run codex-demo -- --sandbox danger-full-access ".scratch\deepening-6-value-types\PRD.md \
   1. Find the highest-priority issue and implement it. \
   2. Run your tests and type checks. \
   3. Update the PRD with what was done. \
