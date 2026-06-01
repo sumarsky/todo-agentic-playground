@@ -1,6 +1,6 @@
 # 03: Update ITodoRepository Port and FakeTodoRepository
 
-**Status:** ready-for-agent
+**Status:** completed
 
 ## Description
 

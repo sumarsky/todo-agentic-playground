@@ -1,4 +1,5 @@
 using BackendApi.Application.Ports;
+using BackendApi.Domain;
 
 namespace BackendApi.Application.UseCases;
 
@@ -13,6 +14,6 @@ public class DeleteTodoUseCase
 
     public Task Execute(Guid id, CancellationToken ct = default)
     {
-        return _repository.DeleteAsync(id, ct);
+        return _repository.DeleteAsync(new TodoId(id), ct);
     }
 }

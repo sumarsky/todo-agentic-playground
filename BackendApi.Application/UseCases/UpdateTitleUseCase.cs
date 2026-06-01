@@ -17,11 +17,11 @@ public class UpdateTitleUseCase
         if (string.IsNullOrWhiteSpace(newTitle))
             throw new ArgumentException("Title cannot be empty or null", nameof(newTitle));
 
-        var todo = await _repository.GetByIdAsync(id, ct);
+        var todo = await _repository.GetByIdAsync(new TodoId(id), ct);
         if (todo == null)
             return null;
 
-        var updated = todo.WithTitle(newTitle);
+        var updated = todo.WithTitle(new TodoTitle(newTitle));
         await _repository.UpdateAsync(updated, ct);
         return updated;
     }

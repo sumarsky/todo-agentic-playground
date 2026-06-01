@@ -23,12 +23,12 @@ public class PostgresTodoRepository : ITodoRepository
             commandTimeout: 30);
     }
 
-    public async Task<Todo?> GetByIdAsync(Guid id, CancellationToken ct = default)
+    public async Task<Todo?> GetByIdAsync(TodoId id, CancellationToken ct = default)
     {
         await using var conn = await _dataSource.OpenConnectionAsync(ct);
         return await conn.QueryFirstOrDefaultAsync<Todo>(
             "SELECT id, title, completed, created_at FROM todos WHERE id = @Id",
-            new { Id = id });
+            new { Id = id.Value });
     }
 
     public async Task<IReadOnlyList<Todo>> GetAllAsync(bool? completed = null, string? search = null, CancellationToken ct = default)
@@ -63,21 +63,21 @@ public class PostgresTodoRepository : ITodoRepository
             commandTimeout: 30);
     }
 
-    public async Task DeleteAsync(Guid id, CancellationToken ct = default)
+    public async Task DeleteAsync(TodoId id, CancellationToken ct = default)
     {
         await using var conn = await _dataSource.OpenConnectionAsync(ct);
         await conn.ExecuteAsync(
             "DELETE FROM todos WHERE id = @Id",
-            new { Id = id },
+            new { Id = id.Value },
             commandTimeout: 30);
     }
 
-    public async Task DeleteByIdsAsync(IEnumerable<Guid> ids, CancellationToken ct = default)
+    public async Task DeleteByIdsAsync(IEnumerable<TodoId> ids, CancellationToken ct = default)
     {
         await using var conn = await _dataSource.OpenConnectionAsync(ct);
         await conn.ExecuteAsync(
             "DELETE FROM todos WHERE id = ANY(@Ids)",
-            new { Ids = ids.ToArray() },
+            new { Ids = ids.Select(id => id.Value).ToArray() },
             commandTimeout: 30);
     }
 }

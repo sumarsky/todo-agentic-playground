@@ -5,7 +5,7 @@ namespace BackendApi.Tests.TestDoubles;
 
 public class FakeTodoRepository : ITodoRepository
 {
-    private readonly Dictionary<Guid, Todo> _todos = new();
+    private readonly Dictionary<TodoId, Todo> _todos = new();
     private readonly object _lock = new();
 
     public Task AddAsync(Todo todo, CancellationToken ct = default)
@@ -17,7 +17,7 @@ public class FakeTodoRepository : ITodoRepository
         return Task.CompletedTask;
     }
 
-    public Task<Todo?> GetByIdAsync(Guid id, CancellationToken ct = default)
+    public Task<Todo?> GetByIdAsync(TodoId id, CancellationToken ct = default)
     {
         lock (_lock)
         {
@@ -39,7 +39,7 @@ public class FakeTodoRepository : ITodoRepository
 
             if (!string.IsNullOrWhiteSpace(search))
             {
-                todos = todos.Where(t => t.Title.Contains(search, StringComparison.OrdinalIgnoreCase)).ToList();
+                todos = todos.Where(t => t.Title.Value.Contains(search, StringComparison.OrdinalIgnoreCase)).ToList();
             }
 
             return Task.FromResult<IReadOnlyList<Todo>>(todos.AsReadOnly());
@@ -58,7 +58,7 @@ public class FakeTodoRepository : ITodoRepository
         return Task.CompletedTask;
     }
 
-    public Task DeleteAsync(Guid id, CancellationToken ct = default)
+    public Task DeleteAsync(TodoId id, CancellationToken ct = default)
     {
         lock (_lock)
         {
@@ -67,7 +67,7 @@ public class FakeTodoRepository : ITodoRepository
         return Task.CompletedTask;
     }
 
-    public Task DeleteByIdsAsync(IEnumerable<Guid> ids, CancellationToken ct = default)
+    public Task DeleteByIdsAsync(IEnumerable<TodoId> ids, CancellationToken ct = default)
     {
         lock (_lock)
         {

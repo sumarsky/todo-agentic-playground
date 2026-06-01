@@ -17,6 +17,8 @@ public class PostgresTodoRepositoryTests : IAsyncLifetime
     private NpgsqlDataSource? _dataSource;
     private PostgresTodoRepository? _repository;
 
+    private static Todo NewTodo(string title) => new(TodoId.New(), new TodoTitle(title));
+
     public async Task InitializeAsync()
     {
         await _postgresContainer.StartAsync();
@@ -49,7 +51,7 @@ public class PostgresTodoRepositoryTests : IAsyncLifetime
     public async Task AddAsync_InsertsTodo_CanRetrieveById()
     {
         // Arrange
-        var todo = new Todo(Guid.NewGuid(), "Test todo");
+        var todo = NewTodo("Test todo");
 
         // Act
         await _repository!.AddAsync(todo);
@@ -66,7 +68,7 @@ public class PostgresTodoRepositoryTests : IAsyncLifetime
     public async Task GetByIdAsync_NonExistentId_ReturnsNull()
     {
         // Act
-        var result = await _repository!.GetByIdAsync(Guid.NewGuid());
+        var result = await _repository!.GetByIdAsync(TodoId.New());
 
         // Assert
         Assert.Null(result);
@@ -76,9 +78,9 @@ public class PostgresTodoRepositoryTests : IAsyncLifetime
     public async Task GetAllAsync_NoFilters_ReturnsAllTodos()
     {
         // Arrange
-        var todo1 = new Todo(Guid.NewGuid(), "Todo 1");
-        var todo2 = new Todo(Guid.NewGuid(), "Todo 2");
-        var todo3 = new Todo(Guid.NewGuid(), "Todo 3");
+        var todo1 = NewTodo("Todo 1");
+        var todo2 = NewTodo("Todo 2");
+        var todo3 = NewTodo("Todo 3");
 
         await _repository!.AddAsync(todo1);
         await _repository.AddAsync(todo2);
@@ -95,9 +97,9 @@ public class PostgresTodoRepositoryTests : IAsyncLifetime
     public async Task GetAllAsync_FilterCompleted_ReturnsOnlyCompletedTodos()
     {
         // Arrange
-        var todo1 = new Todo(Guid.NewGuid(), "Task 1");
-        var todo2 = new Todo(Guid.NewGuid(), "Task 2");
-        var todo3 = new Todo(Guid.NewGuid(), "Task 3");
+        var todo1 = NewTodo("Task 1");
+        var todo2 = NewTodo("Task 2");
+        var todo3 = NewTodo("Task 3");
 
         await _repository!.AddAsync(todo1);
         await _repository.AddAsync(todo2);
@@ -106,7 +108,7 @@ public class PostgresTodoRepositoryTests : IAsyncLifetime
         var completed = todo1.ToggleCompleted();
         await using var conn = await _dataSource!.OpenConnectionAsync();
         await conn.ExecuteAsync("UPDATE todos SET completed = @Completed WHERE id = @Id",
-            new { completed.Completed, Id = completed.Id });
+            new { completed.Completed, Id = completed.Id.Value });
 
         // Act
         var result = await _repository.GetAllAsync(completed: true);
@@ -120,9 +122,9 @@ public class PostgresTodoRepositoryTests : IAsyncLifetime
     public async Task GetAllAsync_SearchByTitle_ReturnsMatchingTodos()
     {
         // Arrange
-        var todo1 = new Todo(Guid.NewGuid(), "Buy groceries");
-        var todo2 = new Todo(Guid.NewGuid(), "Buy milk");
-        var todo3 = new Todo(Guid.NewGuid(), "Walk dog");
+        var todo1 = NewTodo("Buy groceries");
+        var todo2 = NewTodo("Buy milk");
+        var todo3 = NewTodo("Walk dog");
 
         await _repository!.AddAsync(todo1);
         await _repository.AddAsync(todo2);
@@ -140,8 +142,8 @@ public class PostgresTodoRepositoryTests : IAsyncLifetime
     public async Task GetAllAsync_SearchCaseInsensitive_ReturnsMatchingTodos()
     {
         // Arrange
-        var todo1 = new Todo(Guid.NewGuid(), "Buy Groceries");
-        var todo2 = new Todo(Guid.NewGuid(), "Walk dog");
+        var todo1 = NewTodo("Buy Groceries");
+        var todo2 = NewTodo("Walk dog");
 
         await _repository!.AddAsync(todo1);
         await _repository.AddAsync(todo2);
@@ -158,9 +160,9 @@ public class PostgresTodoRepositoryTests : IAsyncLifetime
     public async Task GetAllAsync_CombineCompletedAndSearch_ReturnsCorrectResults()
     {
         // Arrange
-        var todo1 = new Todo(Guid.NewGuid(), "Buy milk");
-        var todo2 = new Todo(Guid.NewGuid(), "Buy groceries");
-        var todo3 = new Todo(Guid.NewGuid(), "Walk dog");
+        var todo1 = NewTodo("Buy milk");
+        var todo2 = NewTodo("Buy groceries");
+        var todo3 = NewTodo("Walk dog");
 
         await _repository!.AddAsync(todo1);
         await _repository.AddAsync(todo2);
@@ -170,9 +172,9 @@ public class PostgresTodoRepositoryTests : IAsyncLifetime
         var completed2 = todo2.ToggleCompleted();
         await using var conn = await _dataSource!.OpenConnectionAsync();
         await conn.ExecuteAsync("UPDATE todos SET completed = @Completed WHERE id = @Id",
-            new { completed1.Completed, Id = completed1.Id });
+            new { completed1.Completed, Id = completed1.Id.Value });
         await conn.ExecuteAsync("UPDATE todos SET completed = @Completed WHERE id = @Id",
-            new { completed2.Completed, Id = completed2.Id });
+            new { completed2.Completed, Id = completed2.Id.Value });
 
         // Act
         var result = await _repository.GetAllAsync(completed: true, search: "Buy");
@@ -187,9 +189,9 @@ public class PostgresTodoRepositoryTests : IAsyncLifetime
     public async Task DeleteAsync_RemovesTodoAndPreservesOthers()
     {
         // Arrange
-        var todo1 = new Todo(Guid.NewGuid(), "Todo 1");
-        var todo2 = new Todo(Guid.NewGuid(), "Todo 2");
-        var todo3 = new Todo(Guid.NewGuid(), "Todo 3");
+        var todo1 = NewTodo("Todo 1");
+        var todo2 = NewTodo("Todo 2");
+        var todo3 = NewTodo("Todo 3");
 
         await _repository!.AddAsync(todo1);
         await _repository.AddAsync(todo2);
@@ -208,10 +210,10 @@ public class PostgresTodoRepositoryTests : IAsyncLifetime
     public async Task DeleteByIdsAsync_RemovesMatchingTodosAndPreservesOthers()
     {
         // Arrange
-        var todo1 = new Todo(Guid.NewGuid(), "Todo 1");
-        var todo2 = new Todo(Guid.NewGuid(), "Todo 2");
-        var todo3 = new Todo(Guid.NewGuid(), "Todo 3");
-        var todo4 = new Todo(Guid.NewGuid(), "Todo 4");
+        var todo1 = NewTodo("Todo 1");
+        var todo2 = NewTodo("Todo 2");
+        var todo3 = NewTodo("Todo 3");
+        var todo4 = NewTodo("Todo 4");
 
         await _repository!.AddAsync(todo1);
         await _repository.AddAsync(todo2);

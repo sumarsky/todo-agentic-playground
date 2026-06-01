@@ -11,7 +11,7 @@ public static class TodoMapper
             Id: todo.Id,
             Title: todo.Title,
             Completed: todo.Completed,
-            CreatedAt: todo.CreatedAt
+            CreatedAt: todo.CreatedAt.UtcDateTime
         );
     }
 

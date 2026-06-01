@@ -17,7 +17,7 @@ public class CreateTodoUseCase
         if (string.IsNullOrWhiteSpace(title))
             throw new ArgumentException("Title cannot be empty or null", nameof(title));
 
-        var todo = new Todo(Guid.NewGuid(), title);
+        var todo = new Todo(TodoId.New(), new TodoTitle(title));
         await _repository.AddAsync(todo, ct);
         return todo;
     }
