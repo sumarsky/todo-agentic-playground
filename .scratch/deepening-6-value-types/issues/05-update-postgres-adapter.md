@@ -1,6 +1,6 @@
 # 05: Update Postgres Adapter — TodoRow DTO and TIMESTAMPTZ
 
-**Status:** ready-for-agent
+**Status:** completed
 
 ## Description
 

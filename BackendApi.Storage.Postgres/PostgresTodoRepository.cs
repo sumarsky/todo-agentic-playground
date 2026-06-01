@@ -9,6 +9,19 @@ public class PostgresTodoRepository : ITodoRepository
 {
     private readonly NpgsqlDataSource _dataSource;
 
+    private readonly record struct TodoRow(
+        Guid Id,
+        string Title,
+        bool Completed,
+        DateTimeOffset CreatedAt)
+    {
+        public static TodoRow FromDomain(Todo todo) =>
+            new(todo.Id.Value, todo.Title, todo.Completed, todo.CreatedAt);
+
+        public Todo ToDomain() =>
+            new(new TodoId(Id), new TodoTitle(Title), Completed, CreatedAt);
+    }
+
     public PostgresTodoRepository(NpgsqlDataSource dataSource)
     {
         _dataSource = dataSource;
@@ -19,16 +32,20 @@ public class PostgresTodoRepository : ITodoRepository
         await using var conn = await _dataSource.OpenConnectionAsync(ct);
         await conn.ExecuteAsync(
             "INSERT INTO todos (id, title, completed, created_at) VALUES (@Id, @Title, @Completed, @CreatedAt)",
-            new { todo.Id, todo.Title, todo.Completed, todo.CreatedAt },
+            TodoRow.FromDomain(todo),
             commandTimeout: 30);
     }
 
     public async Task<Todo?> GetByIdAsync(TodoId id, CancellationToken ct = default)
     {
         await using var conn = await _dataSource.OpenConnectionAsync(ct);
-        return await conn.QueryFirstOrDefaultAsync<Todo>(
+        var row = (await conn.QueryAsync<TodoRow>(
             "SELECT id, title, completed, created_at FROM todos WHERE id = @Id",
-            new { Id = id.Value });
+            new { Id = id.Value }))
+            .Cast<TodoRow?>()
+            .FirstOrDefault();
+
+        return row?.ToDomain();
     }
 
     public async Task<IReadOnlyList<Todo>> GetAllAsync(bool? completed = null, string? search = null, CancellationToken ct = default)
@@ -50,8 +67,8 @@ public class PostgresTodoRepository : ITodoRepository
             parameters.Add("Search", $"%{search}%");
         }
 
-        var results = await conn.QueryAsync<Todo>(sql, parameters);
-        return results.ToList().AsReadOnly();
+        var results = await conn.QueryAsync<TodoRow>(sql, parameters);
+        return results.Select(row => row.ToDomain()).ToList().AsReadOnly();
     }
 
     public async Task UpdateAsync(Todo todo, CancellationToken ct = default)
@@ -59,7 +76,7 @@ public class PostgresTodoRepository : ITodoRepository
         await using var conn = await _dataSource.OpenConnectionAsync(ct);
         await conn.ExecuteAsync(
             "UPDATE todos SET title = @Title, completed = @Completed WHERE id = @Id",
-            new { todo.Id, todo.Title, todo.Completed },
+            TodoRow.FromDomain(todo),
             commandTimeout: 30);
     }
 

@@ -8,11 +8,16 @@ public record Todo
     public DateTimeOffset CreatedAt { get; private init; }
 
     public Todo(TodoId id, TodoTitle title)
+        : this(id, title, completed: false, DateTimeOffset.UtcNow)
+    {
+    }
+
+    public Todo(TodoId id, TodoTitle title, bool completed, DateTimeOffset createdAt)
     {
         Id = id;
         Title = title;
-        Completed = false;
-        CreatedAt = DateTimeOffset.UtcNow;
+        Completed = completed;
+        CreatedAt = createdAt;
     }
 
     public Todo ToggleCompleted() => this with { Completed = !Completed };

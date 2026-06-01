@@ -17,7 +17,12 @@ public class PostgresTodoRepositoryTests : IAsyncLifetime
     private NpgsqlDataSource? _dataSource;
     private PostgresTodoRepository? _repository;
 
-    private static Todo NewTodo(string title) => new(TodoId.New(), new TodoTitle(title));
+    private static Todo NewTodo(string title) =>
+        new(
+            TodoId.New(),
+            new TodoTitle(title),
+            completed: false,
+            new DateTimeOffset(2026, 1, 2, 3, 4, 5, TimeSpan.Zero).AddTicks(1234560));
 
     public async Task InitializeAsync()
     {
@@ -32,7 +37,7 @@ public class PostgresTodoRepositoryTests : IAsyncLifetime
                 id UUID PRIMARY KEY,
                 title TEXT NOT NULL,
                 completed BOOLEAN NOT NULL DEFAULT false,
-                created_at TIMESTAMP NOT NULL DEFAULT NOW()
+                created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
             )");
 
         _repository = new PostgresTodoRepository(_dataSource);
@@ -62,6 +67,8 @@ public class PostgresTodoRepositoryTests : IAsyncLifetime
         Assert.Equal(todo.Id, retrieved.Id);
         Assert.Equal(todo.Title, retrieved.Title);
         Assert.False(retrieved.Completed);
+        Assert.Equal(todo.CreatedAt, retrieved.CreatedAt);
+        Assert.Equal(TimeSpan.Zero, retrieved.CreatedAt.Offset);
     }
 
     [Fact]
