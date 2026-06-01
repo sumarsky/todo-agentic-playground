@@ -1,6 +1,6 @@
 # 01: Introduce TodoId, TodoTitle, TodoTitleSearch Value Types
 
-**Status:** ready-for-agent
+**Status:** completed
 
 ## Description
 
