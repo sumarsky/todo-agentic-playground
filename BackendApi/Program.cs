@@ -5,6 +5,7 @@ using BackendApi.Application.Models;
 using BackendApi.Application.Ports;
 using BackendApi.Application.UseCases;
 using BackendApi.Contracts;
+using BackendApi.Domain;
 using BackendApi.Logging;
 using BackendApi.Mappers;
 using BackendApi.Middleware;
@@ -102,7 +103,8 @@ app.MapPost("/todos", async (TodoCreateRequest request, CreateTodoUseCase useCas
 {
     try
     {
-        var todo = await useCase.Execute(request.Title);
+        var title = new TodoTitle(request.Title);
+        var todo = await useCase.Execute(title);
         return Results.Created($"/todos/{todo.Id}", TodoMapper.ToResponse(todo));
     }
     catch (ArgumentException ex)
@@ -113,15 +115,17 @@ app.MapPost("/todos", async (TodoCreateRequest request, CreateTodoUseCase useCas
 
 app.MapGet("/todos", async (ListTodosUseCase useCase, bool? completed, string? search) =>
 {
-    var todos = await useCase.Execute(completed, search);
+    var titleSearch = new TodoTitleSearch(search);
+    var todos = await useCase.Execute(completed, titleSearch);
     return Results.Ok(TodoMapper.ToResponses(todos));
 }).WithName("ListTodos");
 
-app.MapPut("/todos/{id}/title", async (Guid id, TodoUpdateTitleRequest request, UpdateTitleUseCase useCase) =>
+app.MapPut("/todos/{id}/title", async (TodoId id, TodoUpdateTitleRequest request, UpdateTitleUseCase useCase) =>
 {
     try
     {
-        var todo = await useCase.Execute(id, request.Title);
+        var newTitle = new TodoTitle(request.Title);
+        var todo = await useCase.Execute(id, newTitle);
         if (todo == null)
             return Results.NotFound(new ErrorResponse(404, "Todo not found"));
         return Results.Ok(TodoMapper.ToResponse(todo));
@@ -132,7 +136,7 @@ app.MapPut("/todos/{id}/title", async (Guid id, TodoUpdateTitleRequest request, 
     }
 }).WithName("UpdateTodoTitle");
 
-app.MapPut("/todos/{id}/toggle", async (Guid id, ToggleCompletedUseCase useCase) =>
+app.MapPut("/todos/{id}/toggle", async (TodoId id, ToggleCompletedUseCase useCase) =>
 {
     var todo = await useCase.Execute(id);
     if (todo == null)
@@ -140,7 +144,7 @@ app.MapPut("/todos/{id}/toggle", async (Guid id, ToggleCompletedUseCase useCase)
     return Results.Ok(TodoMapper.ToResponse(todo));
 }).WithName("ToggleTodoCompleted");
 
-app.MapDelete("/todos/{id}", async (Guid id, DeleteTodoUseCase useCase) =>
+app.MapDelete("/todos/{id}", async (TodoId id, DeleteTodoUseCase useCase) =>
 {
     await useCase.Execute(id);
     return Results.NoContent();
@@ -150,8 +154,9 @@ app.MapDelete("/todos", async (HttpContext context, BulkDeleteTodoUseCase useCas
 {
     var ids = context.Request.Query["ids"]
         .SelectMany(x => (x ?? string.Empty).Split(','))
-        .Where(x => Guid.TryParse(x.Trim(), out _))
-        .Select(x => Guid.Parse(x.Trim()))
+        .Select(x => x.Trim())
+        .Where(x => TodoId.TryParse(x, null, out _))
+        .Select(x => TodoId.Parse(x, null))
         .ToList();
 
     if (ids.Count == 0)

@@ -1,6 +1,6 @@
 # 06: Update Endpoints and TodoMapper
 
-**Status:** ready-for-agent
+**Status:** completed
 
 ## Description
 

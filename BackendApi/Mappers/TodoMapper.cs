@@ -8,10 +8,10 @@ public static class TodoMapper
     public static TodoResponse ToResponse(Todo todo)
     {
         return new TodoResponse(
-            Id: todo.Id,
+            Id: todo.Id.Value,
             Title: todo.Title,
             Completed: todo.Completed,
-            CreatedAt: todo.CreatedAt.UtcDateTime
+            CreatedAt: todo.CreatedAt
         );
     }
 
