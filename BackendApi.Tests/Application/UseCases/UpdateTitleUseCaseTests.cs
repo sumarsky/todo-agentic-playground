@@ -15,8 +15,8 @@ public class UpdateTitleUseCaseTests
         var createUseCase = new CreateTodoUseCase(repository);
         var useCase = new UpdateTitleUseCase(repository);
 
-        var todo = await createUseCase.Execute("Old title");
-        var newTitle = "New title";
+        var todo = await createUseCase.Execute(new TodoTitle("Old title"));
+        var newTitle = new TodoTitle("New title");
 
         // Act
         var result = await useCase.Execute(todo.Id, newTitle);
@@ -35,26 +35,16 @@ public class UpdateTitleUseCaseTests
         var createUseCase = new CreateTodoUseCase(repository);
         var useCase = new UpdateTitleUseCase(repository);
 
-        var todo = await createUseCase.Execute("Old title");
+        var todo = await createUseCase.Execute(new TodoTitle("Old title"));
 
         // Act
-        await useCase.Execute(todo.Id, "New title");
+        var newTitle = new TodoTitle("New title");
+        await useCase.Execute(todo.Id, newTitle);
 
         // Assert
         var retrieved = await repository.GetByIdAsync(todo.Id);
         Assert.NotNull(retrieved);
-        Assert.Equal("New title", retrieved.Title);
-    }
-
-    [Fact]
-    public async Task UpdateTitle_WithEmptyTitle_ThrowsArgumentException()
-    {
-        // Arrange
-        var repository = new FakeTodoRepository();
-        var useCase = new UpdateTitleUseCase(repository);
-
-        // Act & Assert
-        await Assert.ThrowsAsync<ArgumentException>(() => useCase.Execute(Guid.NewGuid(), ""));
+        Assert.Equal(newTitle, retrieved.Title);
     }
 
     [Fact]
@@ -65,7 +55,7 @@ public class UpdateTitleUseCaseTests
         var useCase = new UpdateTitleUseCase(repository);
 
         // Act
-        var result = await useCase.Execute(Guid.NewGuid(), "New title");
+        var result = await useCase.Execute(TodoId.New(), new TodoTitle("New title"));
 
         // Assert
         Assert.Null(result);

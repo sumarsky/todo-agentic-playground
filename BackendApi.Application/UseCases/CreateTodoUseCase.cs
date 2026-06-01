@@ -12,12 +12,9 @@ public class CreateTodoUseCase
         _repository = repository;
     }
 
-    public async Task<Todo> Execute(string title, CancellationToken ct = default)
+    public async Task<Todo> Execute(TodoTitle title, CancellationToken ct = default)
     {
-        if (string.IsNullOrWhiteSpace(title))
-            throw new ArgumentException("Title cannot be empty or null", nameof(title));
-
-        var todo = new Todo(TodoId.New(), new TodoTitle(title));
+        var todo = new Todo(TodoId.New(), title);
         await _repository.AddAsync(todo, ct);
         return todo;
     }

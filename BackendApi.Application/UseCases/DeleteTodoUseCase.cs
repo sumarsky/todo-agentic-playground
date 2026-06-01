@@ -12,8 +12,8 @@ public class DeleteTodoUseCase
         _repository = repository;
     }
 
-    public Task Execute(Guid id, CancellationToken ct = default)
+    public Task Execute(TodoId id, CancellationToken ct = default)
     {
-        return _repository.DeleteAsync(new TodoId(id), ct);
+        return _repository.DeleteAsync(id, ct);
     }
 }

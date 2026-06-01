@@ -12,8 +12,8 @@ public class ListTodosUseCase
         _repository = repository;
     }
 
-    public async Task<IReadOnlyList<Todo>> Execute(bool? completed = null, string? search = null, CancellationToken ct = default)
+    public async Task<IReadOnlyList<Todo>> Execute(bool? completed, TodoTitleSearch search, CancellationToken ct = default)
     {
-        return await _repository.GetAllAsync(completed, search, ct);
+        return await _repository.GetAllAsync(completed, search.Value, ct);
     }
 }

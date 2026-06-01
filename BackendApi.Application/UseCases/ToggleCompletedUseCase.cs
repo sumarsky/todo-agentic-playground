@@ -12,9 +12,9 @@ public class ToggleCompletedUseCase
         _repository = repository;
     }
 
-    public async Task<Todo?> Execute(Guid id, CancellationToken ct = default)
+    public async Task<Todo?> Execute(TodoId id, CancellationToken ct = default)
     {
-        var todo = await _repository.GetByIdAsync(new TodoId(id), ct);
+        var todo = await _repository.GetByIdAsync(id, ct);
         if (todo == null)
             return null;
 

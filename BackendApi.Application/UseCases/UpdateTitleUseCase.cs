@@ -12,16 +12,13 @@ public class UpdateTitleUseCase
         _repository = repository;
     }
 
-    public async Task<Todo?> Execute(Guid id, string newTitle, CancellationToken ct = default)
+    public async Task<Todo?> Execute(TodoId id, TodoTitle newTitle, CancellationToken ct = default)
     {
-        if (string.IsNullOrWhiteSpace(newTitle))
-            throw new ArgumentException("Title cannot be empty or null", nameof(newTitle));
-
-        var todo = await _repository.GetByIdAsync(new TodoId(id), ct);
+        var todo = await _repository.GetByIdAsync(id, ct);
         if (todo == null)
             return null;
 
-        var updated = todo.WithTitle(new TodoTitle(newTitle));
+        var updated = todo.WithTitle(newTitle);
         await _repository.UpdateAsync(updated, ct);
         return updated;
     }

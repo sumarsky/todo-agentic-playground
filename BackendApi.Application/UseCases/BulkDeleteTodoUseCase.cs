@@ -12,8 +12,8 @@ public class BulkDeleteTodoUseCase
         _repository = repository;
     }
 
-    public Task Execute(IEnumerable<Guid> ids, CancellationToken ct = default)
+    public Task Execute(IEnumerable<TodoId> ids, CancellationToken ct = default)
     {
-        return _repository.DeleteByIdsAsync(ids.Select(id => new TodoId(id)), ct);
+        return _repository.DeleteByIdsAsync(ids, ct);
     }
 }

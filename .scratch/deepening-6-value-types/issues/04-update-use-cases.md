@@ -1,6 +1,6 @@
 # 04: Update Use Cases — Remove Validation, Accept Value Types
 
-**Status:** ready-for-agent
+**Status:** completed
 
 ## Description
 
